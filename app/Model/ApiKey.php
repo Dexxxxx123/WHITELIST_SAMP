@@ -23,6 +23,11 @@
 class ApiKey extends Model {
   
   /**
+   * We need to define the table name manually otherwise CakePHP will recognize the table as ApiKeys instead of api_keys.
+   */
+  public $useTable = 'api_keys'; 
+  
+  /**
    * An ApiKey belongs to a single user.
    */
   public $belongsTo = 'User';

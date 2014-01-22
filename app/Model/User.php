@@ -35,7 +35,9 @@ class User extends Model {
   /**
    * An User has only one ApiKey, if registered.
    */
-  public $hasOne = 'ApiKey';
+  public $hasOne = array(
+    'ApiKey'
+  );
   
   /**
    * User model validations
@@ -56,6 +58,7 @@ class User extends Model {
     ),
     'email' => array(
       'email' => array('rule' => 'email', 'message' => 'The email is invalid.'),
+      'isUnique' => array('rule' => 'isUnique', 'message' => 'This email has already been used.'),
       'notEmpty' => array('rule' => 'notEmpty', 'message' => 'The email must not be empty.')
     )
   );

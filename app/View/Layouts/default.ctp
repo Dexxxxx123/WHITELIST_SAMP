@@ -41,28 +41,7 @@
     
     <nav>
       <br>
-      <div class="row">
-        <div class="small-12 small-centered text-center columns">
-          <ul class="button-group [radius round]" style="list-style-type: none; text-align: center; display: inline-block;">
-            <li><?php echo $this->Html->link('Index', 
-              array('controller' => 'pages', 'action' => 'display', 'home'), 
-              array('class' => 'button [tiny small large]')
-            ); ?></li>
-            <li><?php echo $this->Html->link('Register', 
-              array('controller' => 'users', 'action' => 'create'), 
-              array('class' => 'button [tiny small large]')
-            ); ?></li>
-            <li><?php echo $this->Html->link('Login', 
-              array('controller' => 'users', 'action' => 'login'), 
-              array('class' => 'button [tiny small large]')
-            ); ?></li>
-            <li><a href="#" class="button [tiny small large]">Button 4</a></li>
-            <li><a href="#" class="button [tiny small large]">Button 5</a></li>
-            <li><a href="#" class="button [tiny small large]">Button 6</a></li>          
-          </ul>
-        </div>
-        <hr>
-      </div>  
+      <?= $this->element('Navigation/bar'); ?>
     </nav>    
     
     <section>
@@ -76,9 +55,7 @@
       </div>    
     </section>    
 
-    <?php
-    echo $this->Html->script('foundation.min.js');
-    ?>
+    <?= $this->Html->script('foundation.min.js'); ?>
     
     <script>
       $(document).foundation();

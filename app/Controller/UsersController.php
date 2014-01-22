@@ -53,7 +53,7 @@ class UsersController extends AppController {
            
       if ($this->User->save($this->request->data)) {
         $this->Session->setFlash(__('The user has been created.'));
-        $this->User->login();
+        $this->Auth->login();
         return $this->redirect(array('action' => 'index'));
       }
       $this->Session->setFlash(__('The user could not be created. Please, try again.'));      
@@ -67,7 +67,7 @@ class UsersController extends AppController {
    */
    public function login() {
      if ($this->request->is('post')) {
-       if ($this->User->login()) {
+       if ($this->Auth->login()) {
          $this->Session->setFlash(__('You logged in successfully.'));       
          return $this->redirect($this->Auth->redirect());
        }
@@ -81,7 +81,9 @@ class UsersController extends AppController {
    * @return function if the user is logged in is logged out and redirected to the homepage.
    */   
    public function logout() {
-     return $this->redirect($this->Auth->logout());
+     $this->Auth->logout();
+     $this->Session->setFlash(__('You logged out successfully.'));      
+     return $this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
    }
    
    /**
@@ -91,13 +93,14 @@ class UsersController extends AppController {
     */
    public function beforeFilter($options = array()) {
      
+     print_r($this->Auth->user('id'));
      # If the user is not logged in, we deny him to access the 'index' action and allow him the actions 'create' and 'login'.    
      if (! $this->Auth->user('id')) {
        $this->Auth->deny('index');
        $this->Auth->allow('create', 'login', 'logout');
      } else {
      # There is no need to allow 'index' again, we've done it already in the AppController.       
-       $this->Auth->allow('logout');
+       $this->Auth->allow('logout', 'index');
      }
    }
 }
