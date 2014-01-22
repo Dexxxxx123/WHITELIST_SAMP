@@ -33,9 +33,6 @@ class UsersController extends AppController {
    * @return function if the user is not logged in is redirected to the homepage.
    */
   public function index() {
-    if(! $this->User->user()) {
-      return $this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
-    }
   }
   
   /**
@@ -52,5 +49,22 @@ class UsersController extends AppController {
    * @return function if the user is logged in already is redirected to the user control panel (index action).
    */
    public function login() {
+   }
+   
+   /**
+    * In the UsersController beforeFilter callback we are going to allow users to login or register.
+    * However, if someone is already logged in, we deny the access to the 'login' action.
+    * Also, remember that in the AppController we allowed everyone to access the 'index' action, however in the UsersController it is only for logged in users.
+    */
+   public function beforeFilter($options = array()) {
+     
+     # If the user is not logged in, we deny him to access the 'index' action and allow him the actions 'create' and 'login'.    
+     if (! $this->Auth->user('id')) {
+       $this->Auth->deny('index');
+       $this->Auth->allow('create', 'login');
+     } else {
+     # There is no need to allow 'index' again, we've done it already in the AppController.       
+       $this->Auth->deny('create', 'login');
+     }
    }
 }

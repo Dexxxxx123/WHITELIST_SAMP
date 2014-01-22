@@ -80,7 +80,7 @@
         <div class="small-12 small-centered text-center columns">                    
           <small>&copy; 2014 MIT License - <a href="https://github.com/GiampaoloFalqui/BLACKLIST_SAMP">BLACKLIST_SAMP</a><br/><br/>
             
-          BLACKLIST_SAMP and the contents herein, are not affiliated with Rockstar Games, Rockstar North or Take-Two Interactive Software Inc.<br/>
+          BLACKLIST_SAMP and the contents herein, is not affiliated with Rockstar Games, Rockstar North or Take-Two Interactive Software Inc.<br/>
           Grand Theft Auto and Grand Theft Auto: San Andreas are registered trademarks of Take-Two Interactive Software Inc.<br/><br/>                    
           </small>
         </div>
