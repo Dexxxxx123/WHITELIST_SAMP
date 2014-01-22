@@ -54,8 +54,9 @@ class AppController extends Controller {
   /**
    * By default, we are going to allow everyone to view the index page.
    * If anything, we'll just be more detailed in who allowing what in every specific controller.
+   * We're also allowing display because we need it to show the static homepage.
    */
   public function beforeFilter($options = array()) {
-    $this->Auth->allow();
+    $this->Auth->allow('index', 'display');
   }
 }
