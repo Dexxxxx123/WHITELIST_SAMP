@@ -15,10 +15,22 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+App::uses('BlowfishPasswordHasher', 'Controller/Component/Auth');
+
 /**
  * User model.
  *
  *
  */
+ 
 class User extends Model {
+  
+  /**
+   * beforeSave callback is used in the User model to hash user passwords when registering in Blowfish.
+   * Which is why we included BlowfishPasswordHasher earlier, outside of the class.
+   */
+   
+  public function beforeSave($options = array()) {
+    $this->data['User']['password'] = (new BlowfishPasswordHasher)->hash($this->data['User']['password']);
+  }  
 }

@@ -21,16 +21,36 @@
  * 
  */
 class UsersController extends AppController {
+  
+  /**
+   * Helpers of the UsersController used by its views.
+   */
   public $helpers = array('Html', 'Form');
   
   /**
-   * Index function
+   * The index action shows the user control panel of the user itself, if logged in.
    * 
    * @return function if the user is not logged in is redirected to the homepage.
    */
   public function index() {
-    if(! $this->User->id) {
+    if(! $this->User->user()) {
       return $this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
     }
   }
+  
+  /**
+   * The register action shows a register form page if the user is not logged in.
+   * 
+   * @return function if the user is logged in already is redirected to the user control panel (index action).
+   */
+  public function create() {    
+  }
+  
+  /**
+   * The login cation shows a login form page if the user is not logged in.
+   * 
+   * @return function if the user is logged in already is redirected to the user control panel (index action).
+   */
+   public function login() {
+   }
 }

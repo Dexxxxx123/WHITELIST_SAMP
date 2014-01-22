@@ -31,4 +31,31 @@ App::uses('Controller', 'Controller');
  * @link		http://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
+  
+  /**
+    * Components used by the entire application.
+   */
+  public $components = array(
+    'Session',
+    'Auth' => array(
+      'authError' => 'You are not allowed to do that.',
+      'loginAction' => array(
+        'controller' => 'users',
+        'action' => 'login'
+      ),       
+      'authenticate' => array(
+        'form' => array(
+          'passwordHasher' => 'Blowfish'
+        )
+      )
+    )    
+  );
+  
+  /**
+   * By default, we are going to allow everyone to view the index page.
+   * If anything, we'll just be more detailed in who allowing what in every specific controller.
+   */
+  public function beforeFilter($options = array()) {
+    $this->Auth->allow();
+  }
 }
