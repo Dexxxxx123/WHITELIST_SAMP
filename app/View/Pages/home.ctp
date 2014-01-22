@@ -1,6 +1,6 @@
 <?php
 /**
- * Homepage file for BLACKLIST_SAMP.
+ * Homepage file for WHITELIST_SAMP.
  *
  * @link          http://cakephp.org CakePHP(tm) Project
  * @package       app.View.Pages
