@@ -8,9 +8,9 @@
  */
 ?>
 
-<h3><em>Welcome</em> in BLACKLIST_SAMP.</h3><br>
+<h3><em>Welcome</em> in WHITELIST_SAMP.</h3><br>
 
-<p>BLACKLIST_SAMP is a <em>global blacklist portal</em> that allows <strong>San Andreas Multiplayer</strong> developers
+<p>WHITELIST_SAMP is a <em>global whitelist portal</em> that allows <strong>San Andreas Multiplayer</strong> developers
 to free their servers from cheaters, trolls or generally users that hurt other ones experience.</p><br>
 
 <p>This project makes use of <strong><a href="http://cakephp.org/">CakePHP</a></strong> for the website which also includes RESTful APIs to communicate from

@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * BLACKLIST_SAMP: Global Blacklist Platform (https://github.com/GiampaoloFalqui/BLACKLIST_SAMP)
+ * WHITELIST_SAMP: Global Blacklist Platform (https://github.com/GiampaoloFalqui/WHITELIST_SAMP)
  *
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
@@ -21,9 +21,9 @@
 <html class="no-js" lang="en">
   <head>
     <?php 
-    echo $this->Html->charset('UTF-8');    
+    echo $this->Html->charset('UTF-8');   
     echo $this->Html->meta('icon'); 
-    echo $this->Html->css('foundation.min.css'); 	
+    echo $this->Html->css('foundation.min.css');	
     echo $this->Html->script('http://code.jquery.com/jquery.min.js');
     ?>
   </head>
@@ -33,8 +33,8 @@
     <header>
       <div class="row">
         <div class="small-12 small-centered text-center columns">
-          <br><?php echo $this->Html->image('logo.png', array('alt' => 'BLACKLIST_SAMP Logo')); ?><br>
-          <h2 class="subheader">global blacklist platform</h2>
+          <br><?php echo $this->Html->image('logo.png', array('alt' => 'WHITELIST_SAMP Logo')); ?><br>
+          <h2 class="subheader">global whitelist platform</h2>
         </div>
       </div>              
     </header>
