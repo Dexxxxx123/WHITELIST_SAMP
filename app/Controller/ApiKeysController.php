@@ -16,7 +16,7 @@
  */
  
 /**
- * API keys controller controller.
+ * API keys controller.
  * 
  * 
  */

@@ -21,4 +21,5 @@
  *
  */
 class Address extends Model {
+  public $belongsTo = 'Alias';
 }

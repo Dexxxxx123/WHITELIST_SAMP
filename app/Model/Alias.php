@@ -1,6 +1,6 @@
 <?php
 /**
- * User model.
+ * Alias model.
  *
  * BLACKLIST_SAMP: Global Blacklist Platform (https://github.com/GiampaoloFalqui/BLACKLIST_SAMP)
  * 
@@ -15,24 +15,12 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-App::uses('BlowfishPasswordHasher', 'Controller/Component/Auth');
-
 /**
- * User model.
+ * Alias model.
  *
  *
  */
- 
-class User extends Model {
-  
-  public $hasMany = 'Alias';
-  
-  /**
-   * beforeSave callback is used in the User model to hash user passwords when registering in Blowfish.
-   * Which is why we included BlowfishPasswordHasher earlier, outside of the class.
-   */
-   
-  public function beforeSave($options = array()) {
-    $this->data['User']['password'] = (new BlowfishPasswordHasher)->hash($this->data['User']['password']);
-  }  
+class Alias extends Model {
+  public $belongsTo = 'User';
+  public $hasMany = 'Address';
 }
