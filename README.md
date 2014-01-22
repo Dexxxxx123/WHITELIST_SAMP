@@ -4,7 +4,7 @@ WHITELIST_SAMP
 ### What is WHITELIST_SAMP?
 **WHITELIST_SAMP** is a global white portal to get rid of cheaters and generally users that hurt the user experience (by trolling, for example).
 
-BLACKLIST_SAMP _does not_ provide any form of real anti-cheat to servers.
+WHITELIST_SAMP _does not_ provide any form of real anti-cheat to servers.
 
 ### How does WHITELIST_SAMP work?
 WHITELIST_SAMP functionality is fairly simple. Once a user joins a server, if WHITELIST_SAMP is implement the server requests the user to register their WHITELIST_SAMP account in the server. An API sends WHITELIST_SAMP the user IP address, username, password (obviously hashed) and store it in the database. In this way, if a player changes nickname and the IPs match, it will be saved as alias in the database.
