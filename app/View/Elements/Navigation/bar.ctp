@@ -1,36 +1,16 @@
-<?php if (! $this->Session->read('Auth.User')): ?>
+<?php if ($this->Session->read('Auth.User')): ?>
       <div class="row">
         <div class="small-12 small-centered text-center columns">
           <ul class="button-group [radius round]" style="list-style-type: none; text-align: center; display: inline-block;">
-            <li><?php echo $this->Html->link('Index', 
+            <li><?= $this->Html->link('Index', 
               array('controller' => 'pages', 'action' => 'display', 'home'), 
               array('class' => 'button [tiny small large]')
             ); ?></li>
-            <li><?php echo $this->Html->link('Register', 
-              array('controller' => 'users', 'action' => 'create'), 
-              array('class' => 'button [tiny small large]')
-            ); ?></li>
-            <li><?php echo $this->Html->link('Login', 
-              array('controller' => 'users', 'action' => 'login'), 
-              array('class' => 'button [tiny small large]')
-            ); ?></li>                              
-          </ul>
-        </div>
-        <hr>
-      </div>           
-<?php else: ?>
-      <div class="row">
-        <div class="small-12 small-centered text-center columns">
-          <ul class="button-group [radius round]" style="list-style-type: none; text-align: center; display: inline-block;">
-            <li><?php echo $this->Html->link('Index', 
-              array('controller' => 'pages', 'action' => 'display', 'home'), 
-              array('class' => 'button [tiny small large]')
-            ); ?></li>
-            <li><?php echo $this->Html->link('UCP', 
+            <li><?= $this->Html->link('UCP', 
               array('controller' => 'users', 'action' => 'view', $this->Session->read('Auth.User.id')), 
               array('class' => 'button [tiny small large]')
             ); ?></li> 
-             <li><?php echo $this->Html->link('Logout', 
+             <li><?= $this->Html->link('Logout', 
               array('controller' => 'users', 'action' => 'logout'), 
               array('class' => 'button [tiny small large]')
             ); ?></li>             
@@ -44,5 +24,25 @@
         </div>
         <br>
         <hr>
-      </div>
+      </div>        
+<?php else: ?>      
+      <div class="row">
+        <div class="small-12 small-centered text-center columns">
+          <ul class="button-group [radius round]" style="list-style-type: none; text-align: center; display: inline-block;">
+            <li><?= $this->Html->link('Index', 
+              array('controller' => 'pages', 'action' => 'display', 'home'), 
+              array('class' => 'button [tiny small large]')
+            ); ?></li>
+            <li><?= $this->Html->link('Register', 
+              array('controller' => 'users', 'action' => 'create'), 
+              array('class' => 'button [tiny small large]')
+            ); ?></li>
+            <li><?= $this->Html->link('Login', 
+              array('controller' => 'users', 'action' => 'login'), 
+              array('class' => 'button [tiny small large]')
+            ); ?></li>                              
+          </ul>
+        </div>
+        <hr>
+      </div>        
 <?php endif; ?>      

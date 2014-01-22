@@ -74,7 +74,7 @@
       
       <div class="row">
         <div class="small-12 small-centered text-center columns">                    
-          <?php echo $this->element('sql_dump'); ?>
+          <?= $this->element('sql_dump'); ?>
         </div>
       </div>       
   </footer>

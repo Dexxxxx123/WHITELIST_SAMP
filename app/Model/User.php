@@ -35,9 +35,7 @@ class User extends Model {
   /**
    * An User has only one ApiKey, if registered.
    */
-  public $hasOne = array(
-    'ApiKey'
-  );
+  public $hasOne ='ApiKey';
   
   /**
    * User model validations
@@ -71,59 +69,6 @@ class User extends Model {
   public function checkPasswordMatch() {
     return $this->data['User']['password'] === $this->data['User']['repeat_password'];
   }
-  
-  /**
-   * Finds all the aliases by the client address (checking the database known addresses).
-   * 
-   * @return bool|array if errors are found, false is returned. otherwise an array with aliases found is returned.  
-   
-  public function findLinkedAliasses($ip) {
-    if (! $ip) {     
-      return false;
-    }
-    
-    $addressModel = new Address;
-    $result = $addressModel->find('all', array(
-      'conditions' => array(
-        'Address.address' => $ip,
-        'Address.status' => 1
-      )
-    ));
-       
-    if (! $result) {
-      return false;
-    } else {
-      return $result;
-    }
-  }
-
-   */
-
-  /**
-   * Link an array of aliases to a specific user id.
-   
-  public function linkAliasesToUser($result, $id) {
-    if (! $result) {
-      return false;
-    }
-    
-    if (! $id) {
-      return false;
-    }
-    
-    $aliasModel = new Alias;
-    $index = 0;
-    while ($index < count($result)) {
-      $result[$index]['Alias']['user_id'] = $id;
-      $aliasModel->save($result[$index]['Alias']);
-      $index++;
-    }
-    
-    
-    return true;  
-  }
-  
-   */
    
   /**
    * beforeSave callback is used in the User model to hash user passwords when registering in Blowfish.

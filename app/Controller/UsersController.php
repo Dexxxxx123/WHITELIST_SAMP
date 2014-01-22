@@ -92,15 +92,13 @@ class UsersController extends AppController {
     * Also, remember that in the AppController we allowed everyone to access the 'index' action, however in the UsersController it is only for logged in users.
     */
    public function beforeFilter($options = array()) {
-     
-     print_r($this->Auth->user('id'));
      # If the user is not logged in, we deny him to access the 'index' action and allow him the actions 'create' and 'login'.    
-     if (! $this->Auth->user('id')) {
-       $this->Auth->deny('index');
-       $this->Auth->allow('create', 'login', 'logout');
+     if ($this->Auth->user('id')) {
+       $this->Auth->allow('logout', 'index');
      } else {
      # There is no need to allow 'index' again, we've done it already in the AppController.       
-       $this->Auth->allow('logout', 'index');
+       $this->Auth->deny('index');
+       $this->Auth->allow('create', 'login', 'logout');       
      }
    }
 }
