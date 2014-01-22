@@ -21,6 +21,14 @@
  *
  */
 class Alias extends Model {
+  
+  /**
+   * An Alias belongs to an User.
+   */
   public $belongsTo = 'User';
+  
+  /**
+   * An Alias has many addresses, if necessary.
+   */
   public $hasMany = 'Address';
 }

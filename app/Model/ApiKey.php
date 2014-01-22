@@ -21,4 +21,9 @@
  *
  */
 class ApiKey extends Model {
+  
+  /**
+   * An ApiKey belongs to a single user.
+   */
+  public $belongsTo = 'User';
 }

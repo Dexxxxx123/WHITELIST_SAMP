@@ -25,7 +25,15 @@ App::uses('BlowfishPasswordHasher', 'Controller/Component/Auth');
  
 class User extends Model {
   
+  /**
+   * An User has many aliases, if necessary.
+   */
   public $hasMany = 'Alias';
+  
+  /**
+   * An User has only one ApiKey, if registered.
+   */
+   public $hasOne = 'ApiKey';
   
   /**
    * beforeSave callback is used in the User model to hash user passwords when registering in Blowfish.
