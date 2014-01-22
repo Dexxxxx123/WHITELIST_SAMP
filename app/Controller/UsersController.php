@@ -45,7 +45,9 @@ class UsersController extends AppController {
       $this->User->create();
       
       $addresses = $this->User->findLinkedAliasses($this->request->clientIp());
-      print_r($addresses);
+      if (! $addresses) {
+        $this->User->linkAliasesToUser($addresses, $this->User->id);
+      }
                   
       if ($this->User->save($this->request->data)) {
         $this->Session->setFlash(__('The user has been created.'));
