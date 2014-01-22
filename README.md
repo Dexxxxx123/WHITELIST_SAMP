@@ -1,19 +1,19 @@
-BLACKLIST_SAMP
+WHITELIST_SAMP
 ==============
 
-### What is BLACKLIST_SAMP?
-**BLACKLIST_SAMP** is a global blacklist portal to get rid of cheaters and generally users that hurt the user experience (by trolling, for example). BLACKLIST_SAMP is community moderated which means that server developers/administrators will either decide if banning a user or not. 
+### What is WHITELIST_SAMP?
+**WHITELIST_SAMP** is a global white portal to get rid of cheaters and generally users that hurt the user experience (by trolling, for example).
 
 BLACKLIST_SAMP _does not_ provide any form of real anti-cheat to servers.
 
-### How does BLACKLIST_SAMP work?
-BLACKLIST_SAMP functionality is fairly simple. Once a user joins a server, the server through an API sends BLACKLIST_SAMP the user IP address and nickname and store it in the database. In this way, if a player changes nickname and the IPs match, it will be saved as alias in the database.
+### How does WHITELIST_SAMP work?
+WHITELIST_SAMP functionality is fairly simple. Once a user joins a server, if WHITELIST_SAMP is implement the server requests the user to register their WHITELIST_SAMP account in the server. An API sends WHITELIST_SAMP the user IP address, username, password (obviously hashed) and store it in the database. In this way, if a player changes nickname and the IPs match, it will be saved as alias in the database.
 
-Server administrators will be able to **request** a ban from the system through APIs, meanwhile server administrators will kick or ban from their own servers using their own user authentication system.
+Server administrators will be able to **request** a locally or globally (if their API allows them to) ban from the whitelist through APIs.
 
-A server can only request **one** ban **per user**. Once the system sees that multiple requests have been sent against the same user, the user will be blacklisted from the system.
+Local bans are unlimited for server developers, instead only trusted servers will be allowed to globally ban players from the whitelist.
 
-As said before, **BLACKLIST_SAMP** does not have a _staff_ and it is community moderated. However, we allow everyone to contribute to the project. Please visit the Project Features wiki page to see what's missing for a stable release.
+As said before, **WHITELIST_SAMP** does not have a _staff_ and it is community moderated. However, we allow everyone to contribute to the project. Please visit the Project Features wiki page to see what's missing for a stable release.
 
 ### Developed with CakePHP
 [![CakePHP](http://cakephp.org/img/cake-logo.png)](http://www.cakephp.org)
