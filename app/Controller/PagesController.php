@@ -19,7 +19,6 @@
  */
 
 App::uses('AppController', 'Controller');
-App::uses('User', 'Model');
 
 /**
  * Static content controller
@@ -74,8 +73,5 @@ class PagesController extends AppController {
 			}
 			throw new NotFoundException();
 		}
-    
-    $user = new User;
-    $addresses = $user->findLinkedAliasses($this->request->clientIp());   
 	}
 }
