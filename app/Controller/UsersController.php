@@ -22,4 +22,15 @@
  */
 class UsersController extends AppController {
   public $helpers = array('Html', 'Form');
+  
+  /**
+   * Index function
+   * 
+   * @return function if the user is not logged in is redirected to the homepage.
+   */
+  public function index() {
+    if(! $this->User->id) {
+      return $this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
+    }
+  }
 }

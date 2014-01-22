@@ -20,5 +20,5 @@
  *
  *
  */
-class ApiKeyModel extends Model {
+class ApiKey extends Model {
 }

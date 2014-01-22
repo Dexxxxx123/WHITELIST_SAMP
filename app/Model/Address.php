@@ -20,5 +20,5 @@
  *
  *
  */
-class AddressModel extends Model {
+class Address extends Model {
 }

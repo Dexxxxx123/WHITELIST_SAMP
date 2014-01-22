@@ -20,5 +20,5 @@
  *
  *
  */
-class UserModel extends Model {
+class User extends Model {
 }
