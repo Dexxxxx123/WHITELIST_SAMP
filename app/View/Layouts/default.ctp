@@ -23,7 +23,7 @@
     <?php 
     echo $this->Html->charset('UTF-8');   
     echo $this->Html->meta('icon'); 
-    echo $this->Html->css('foundation.min.css');	
+    echo $this->Html->css('foundation.min.css');
     echo $this->Html->script('http://code.jquery.com/jquery.min.js');
     ?>
   </head>
@@ -42,11 +42,20 @@
     <nav>
       <br>
       <div class="row">
-        <div class="small-8 small-centered text-center columns">
-          <ul class="button-group [radius round]">
-            <li><a href="#" class="button [tiny small large]">Button 1</a></li>
-            <li><a href="#" class="button [tiny small large]">Button 2</a></li>
-            <li><a href="#" class="button [tiny small large]">Button 3</a></li>
+        <div class="small-12 small-centered text-center columns">
+          <ul class="button-group [radius round]" style="list-style-type: none; text-align: center; display: inline-block;">
+            <li><?php echo $this->Html->link('Index', 
+              array('controller' => 'pages', 'action' => 'display', 'home'), 
+              array('class' => 'button [tiny small large]')
+            ); ?></li>
+            <li><?php echo $this->Html->link('Register', 
+              array('controller' => 'users', 'action' => 'create'), 
+              array('class' => 'button [tiny small large]')
+            ); ?></li>
+            <li><?php echo $this->Html->link('Login', 
+              array('controller' => 'users', 'action' => 'login'), 
+              array('class' => 'button [tiny small large]')
+            ); ?></li>
             <li><a href="#" class="button [tiny small large]">Button 4</a></li>
             <li><a href="#" class="button [tiny small large]">Button 5</a></li>
             <li><a href="#" class="button [tiny small large]">Button 6</a></li>          

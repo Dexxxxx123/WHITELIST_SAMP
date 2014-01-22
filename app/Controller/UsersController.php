@@ -44,13 +44,16 @@ class UsersController extends AppController {
     if ($this->request->is('post')) {
       $this->User->create();
       
+      /*
       $addresses = $this->User->findLinkedAliasses($this->request->clientIp());
       if (! $addresses) {
         $this->User->linkAliasesToUser($addresses, $this->User->id);
       }
-                  
+      */
+           
       if ($this->User->save($this->request->data)) {
         $this->Session->setFlash(__('The user has been created.'));
+        $this->User->login();
         return $this->redirect(array('action' => 'index'));
       }
       $this->Session->setFlash(__('The user could not be created. Please, try again.'));      
@@ -58,11 +61,27 @@ class UsersController extends AppController {
   }
   
   /**
-   * The login cation shows a login form page if the user is not logged in.
+   * The login ation shows a login form page if the user is not logged in.
    * 
    * @return function if the user is logged in already is redirected to the user control panel (index action).
    */
    public function login() {
+     if ($this->request->is('post')) {
+       if ($this->User->login()) {
+         $this->Session->setFlash(__('You logged in successfully.'));       
+         return $this->redirect($this->Auth->redirect());
+       }
+       $this->Session->setFlash(__('Username or password are wrong.'));
+     }
+   }
+   
+  /**
+   * The logout ation logs a user off the portal.
+   * 
+   * @return function if the user is logged in is logged out and redirected to the homepage.
+   */   
+   public function logout() {
+     return $this->redirect($this->Auth->logout());
    }
    
    /**
@@ -75,10 +94,10 @@ class UsersController extends AppController {
      # If the user is not logged in, we deny him to access the 'index' action and allow him the actions 'create' and 'login'.    
      if (! $this->Auth->user('id')) {
        $this->Auth->deny('index');
-       $this->Auth->allow('create', 'login');
+       $this->Auth->allow('create', 'login', 'logout');
      } else {
      # There is no need to allow 'index' again, we've done it already in the AppController.       
-       $this->Auth->deny('create', 'login');
+       $this->Auth->allow('logout');
      }
    }
 }

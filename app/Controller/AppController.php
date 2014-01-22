@@ -41,8 +41,12 @@ class AppController extends Controller {
       'authError' => 'You are not allowed to do that.',
       'loginAction' => array(
         'controller' => 'users',
-        'action' => 'login'
-      ),       
+        'action' => 'index'
+      ),
+      'logoutAction' => array(
+        'controller' => 'pages',
+        'action' => 'display', 'home'
+      ),
       'authenticate' => array(
         'form' => array(
           'passwordHasher' => 'Blowfish'
