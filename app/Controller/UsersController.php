@@ -28,9 +28,9 @@ class UsersController extends AppController {
    public function beforeFilter($options = array()) {
      # If the user is not logged in, we deny him to access the 'index' action and allow him the actions 'create' and 'login'.    
      if ($this->Auth->user('id')) {
-       $this->Auth->allow('logout', 'index');
+       $this->Auth->allow('logout', 'index', 'view');
      } else {
-     # There is no need to allow 'index' again, we've done it already in the AppController.       
+     # There is no need to allow 'index' again, we've done it already in the AppController.
        $this->Auth->deny('index');
        $this->Auth->allow('create', 'login', 'logout');       
      }
@@ -48,10 +48,25 @@ class UsersController extends AppController {
    *
    * @return void
    */
+   
   public function index() {
+    
+    if ($this->Auth->user('id')) {
+      return $this->redirect(array('controller' => 'users', 'action' => 'view', 'id' => $this->Auth->user('id')));
+    } else {
+      return $this->redirect(array('controller' => 'users', 'action' => 'login'));
+    }
+  }
+  
+  public function view($id) {
+           
+     if (! $this->User->exists($id)) {
+       throw new NotFoundException(__('User not found.'));
+     }    
+    
     $this->set('user', $this->User->find('first', array(
         'conditions' => array(
-          'User.id' => $this->Auth->user('id')
+          'User.id' => $id
         ),
         'fields' => array(
           'User.id',
@@ -72,11 +87,11 @@ class UsersController extends AppController {
     if ($this->request->is('post')) {
       $this->User->create();           
       if ($this->User->save($this->request->data)) {
-        $this->Session->setFlash(__('The user has been created.'));
+        $this->Session->setFlash(__('The user has been created.'), 'default', array(), 'success');
         $this->Auth->login();
         return $this->redirect(array('action' => 'index'));
       }
-      $this->Session->setFlash(__('The user could not be created. Please, try again.'));      
+      $this->Session->setFlash(__('The user could not be created. Please, try again.'), 'default', array(), 'warning');      
     }
   }
   
@@ -88,10 +103,10 @@ class UsersController extends AppController {
    public function login() {
      if ($this->request->is('post')) {
        if ($this->Auth->login()) {
-         $this->Session->setFlash(__('You logged in successfully.'));       
+         $this->Session->setFlash(__('You logged in successfully.'), 'default', array(), 'success');       
          return $this->redirect($this->Auth->redirect());
        }
-       $this->Session->setFlash(__('Username or password are wrong.'));
+       $this->Session->setFlash(__('Username or password are wrong.'), 'default', array(), 'warning');
      }
    }
    
@@ -102,7 +117,30 @@ class UsersController extends AppController {
    */   
    public function logout() {         
      $this->Auth->logout();
-     $this->Session->setFlash(__('You logged out successfully.'));      
+     $this->Session->setFlash(__('You logged out successfully.'), 'default', array(), 'success');      
      return $this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
+   }
+   
+   /**
+    * Route examples:
+    * 
+    * 1. GET /users/view/3/connections
+    * 2. GET /users/connections
+    * 3.
+    */
+   public function connections($id = null) {
+         
+     if (! $id) {
+       $id = $this->Auth->user('id');
+     }
+                
+     if (! $this->User->exists($id)) {
+       throw new NotFoundException(__('User not found.'));
+     }
+     
+     $this->set('connections', $this->User->Alias->find('all', array(
+      'conditions' => array(
+        'Alias.user_id' => $id
+      ))));
    }
 }

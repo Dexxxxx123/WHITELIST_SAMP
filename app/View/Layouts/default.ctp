@@ -29,11 +29,11 @@
   </head>
   
   <body>
-    <a href="https://github.com/GiampaoloFalqui/BLACKLIST_SAMP"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
+    <a href="https://github.com/GiampaoloFalqui/WHITELIST_SAMP"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
     <header>
       <div class="row">
         <div class="small-12 small-centered text-center columns">
-          <br><?php echo $this->Html->image('logo.png', array('alt' => 'WHITELIST_SAMP Logo')); ?><br>
+          <br><?= $this->Html->image('logo.png', array('alt' => 'WHITELIST_SAMP Logo')); ?><br>
           <h2 class="subheader">global whitelist platform</h2>
         </div>
       </div>              
@@ -47,9 +47,11 @@
     <section>
       <div class="row">
         <div class="small-12 small-centered columns">
-        <?php echo $this->Session->flash(); ?>
+        <?= $this->Session->flash('success', array('element' => 'Flashes/success')); ?>
+        <?= $this->Session->flash('notice', array('element' => 'Flashes/notice')); ?>
+        <?= $this->Session->flash('warning', array('element' => 'Flashes/warning')); ?>
   
-        <?php echo $this->fetch('content'); ?>
+        <?= $this->fetch('content'); ?>
         </div>
         <hr>
       </div>    
@@ -64,9 +66,9 @@
   <footer>
       <div class="row">
         <div class="small-12 small-centered text-center columns">                    
-          <small>&copy; 2014 MIT License - <a href="https://github.com/GiampaoloFalqui/BLACKLIST_SAMP">BLACKLIST_SAMP</a><br/><br/>
+          <small>&copy; 2014 MIT License - <a href="https://github.com/GiampaoloFalqui/WHITELIST_SAMP">WHITELIST_SAMP</a><br/><br/>
             
-          BLACKLIST_SAMP and the contents herein, is not affiliated with Rockstar Games, Rockstar North or Take-Two Interactive Software Inc.<br/>
+          WHITELIST_SAMP and the contents herein, is not affiliated with Rockstar Games, Rockstar North or Take-Two Interactive Software Inc.<br/>
           Grand Theft Auto and Grand Theft Auto: San Andreas are registered trademarks of Take-Two Interactive Software Inc.<br/><br/>                    
           </small>
         </div>

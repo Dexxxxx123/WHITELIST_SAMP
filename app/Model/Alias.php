@@ -30,5 +30,5 @@ class Alias extends Model {
   /**
    * An Alias has many addresses, if necessary.
    */
-  public $hasMany = 'Address';
+  public $hasMany = 'Connection';
 }

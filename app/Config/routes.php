@@ -29,6 +29,14 @@
  * User Routes
  */
   Router::connect('/users/register', array('controller' => 'users', 'action' => 'create'));
+  Router::connect('/users/login', array('controller' => 'users', 'action' => 'login'));
+  Router::connect('/users/logout', array('controller' => 'users', 'action' => 'logout'));
+  
+/**
+ * Global Routes
+ */  
+  Router::connect('/:controller/:id', array('action' => 'view'), array('pass' => array('id'))); 
+  Router::connect('/:controller/:id/:action/*', array('pass' => array('id')));
 
 /**
  * Load all plugin routes. See the CakePlugin documentation on
