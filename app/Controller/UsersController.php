@@ -17,75 +17,9 @@
  
 /**
  * Users controller.
- * 
- * 
  */
 class UsersController extends AppController {
   
-  /**
-   * Helpers of the UsersController used by its views.
-   */
-  public $helpers = array('Html', 'Form');
-  
-  /**
-   * The index action shows the user control panel of the user itself, if logged in.
-   * 
-   * @return function if the user is not logged in is redirected to the homepage.
-   */
-  public function index() {
-  }
-  
-  /**
-   * The register action shows a register form page if the user is not logged in.
-   * 
-   * @return function if the user is logged in already is redirected to the user control panel (index action).
-   */
-  public function create() {
-    if ($this->request->is('post')) {
-      $this->User->create();
-      
-      /*
-      $addresses = $this->User->findLinkedAliasses($this->request->clientIp());
-      if (! $addresses) {
-        $this->User->linkAliasesToUser($addresses, $this->User->id);
-      }
-      */
-           
-      if ($this->User->save($this->request->data)) {
-        $this->Session->setFlash(__('The user has been created.'));
-        $this->Auth->login();
-        return $this->redirect(array('action' => 'index'));
-      }
-      $this->Session->setFlash(__('The user could not be created. Please, try again.'));      
-    }
-  }
-  
-  /**
-   * The login ation shows a login form page if the user is not logged in.
-   * 
-   * @return function if the user is logged in already is redirected to the user control panel (index action).
-   */
-   public function login() {
-     if ($this->request->is('post')) {
-       if ($this->Auth->login()) {
-         $this->Session->setFlash(__('You logged in successfully.'));       
-         return $this->redirect($this->Auth->redirect());
-       }
-       $this->Session->setFlash(__('Username or password are wrong.'));
-     }
-   }
-   
-  /**
-   * The logout ation logs a user off the portal.
-   * 
-   * @return function if the user is logged in is logged out and redirected to the homepage.
-   */   
-   public function logout() {
-     $this->Auth->logout();
-     $this->Session->setFlash(__('You logged out successfully.'));      
-     return $this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
-   }
-   
    /**
     * In the UsersController beforeFilter callback we are going to allow users to login or register.
     * However, if someone is already logged in, we deny the access to the 'login' action.
@@ -100,5 +34,75 @@ class UsersController extends AppController {
        $this->Auth->deny('index');
        $this->Auth->allow('create', 'login', 'logout');       
      }
+   }  
+  
+  /**
+   * Helpers of the UsersController used by its views.
+   * 
+   * @var array
+   */
+  public $helpers = array('Html', 'Form', 'Time');
+  
+  /**
+   * The index action shows the user control panel of the user itself, if logged in.
+   *
+   * @return void
+   */
+  public function index() {
+    $this->set('user', $this->User->find('first', array(
+        'conditions' => array(
+          'User.id' => $this->Auth->user('id')
+        ),
+        'fields' => array(
+          'User.id',
+          'User.username',
+          'User.email',
+          'User.joined',
+          'User.authy_id',
+          'User.role'
+        ))));
+  }
+  
+  /**
+   * The register action shows a register form page (if GET request) if the user is not logged in.
+   * 
+   * @return boolean If the user logs in successfully is redirected to the user control panel (index action), otherwise nothing is returned.
+   */
+  public function create() {
+    if ($this->request->is('post')) {
+      $this->User->create();           
+      if ($this->User->save($this->request->data)) {
+        $this->Session->setFlash(__('The user has been created.'));
+        $this->Auth->login();
+        return $this->redirect(array('action' => 'index'));
+      }
+      $this->Session->setFlash(__('The user could not be created. Please, try again.'));      
+    }
+  }
+  
+  /**
+   * The login action shows a login form page (if GET request) if the user is not logged in.
+   * 
+   * @return boolean If the user logs in successfully is redirected to the user control panel (index action), otherwise nothing is returned.
+   */
+   public function login() {
+     if ($this->request->is('post')) {
+       if ($this->Auth->login()) {
+         $this->Session->setFlash(__('You logged in successfully.'));       
+         return $this->redirect($this->Auth->redirect());
+       }
+       $this->Session->setFlash(__('Username or password are wrong.'));
+     }
+   }
+   
+  /**
+   * The logout ation logs a user off the portal.
+   * 
+   * @return boolean If the user is logged in it gets logged out and returns true (from redirect action).
+   */   
+   public function logout() {         
+     $this->Auth->logout();
+     $this->Session->setFlash(__('You logged out successfully.'));      
+     return $this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
    }
 }

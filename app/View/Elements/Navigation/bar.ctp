@@ -7,7 +7,7 @@
               array('class' => 'button [tiny small large]')
             ); ?></li>
             <li><?= $this->Html->link('UCP', 
-              array('controller' => 'users', 'action' => 'view', $this->Session->read('Auth.User.id')), 
+              array('controller' => 'users', 'action' => 'index'), 
               array('class' => 'button [tiny small large]')
             ); ?></li> 
              <li><?= $this->Html->link('Logout', 

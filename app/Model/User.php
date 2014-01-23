@@ -16,55 +16,77 @@
  */
 
 App::uses('BlowfishPasswordHasher', 'Controller/Component/Auth');
-# App::uses('Address', 'Model');
-# App::uses('Alias', 'Model');
 
 /**
  * User model.
- *
- *
  */
  
 class User extends Model {
   
   /**
    * An User has many aliases, if necessary.
+   * 
+   * @var string
    */
   public $hasMany = 'Alias';
   
   /**
    * An User has only one ApiKey, if registered.
+   * 
+   * @var string
    */
   public $hasOne ='ApiKey';
   
   /**
    * User model validations
+   * 
+   * @var array
    */
   public $validate = array(
     'username' => array(
-      'between' => array('rule' => array('between', 4, 20), 'message' => 'The username must be between 4 to 20 characters.'),
-      'isUnique' => array('rule' => 'isUnique', 'message' => 'This username has already been used.'),
-      'notEmpty' => array('rule' => 'notEmpty', 'message' => 'The username must not be empty.')           
+      'between' => array(
+        'rule' => array('between', 4, 20), 'message' => 'The username must be between 4 to 20 characters.'
+      ),
+      'isUnique' => array(
+        'rule' => 'isUnique', 'message' => 'This username has already been used.'
+       ),
+      'notEmpty' => array(
+        'rule' => 'notEmpty', 'message' => 'The username must not be empty.'
+       )           
     ),
     'password' => array(
-      'between' => array('rule' => array('between', 4, 20), 'message' => 'The password must be between 4 to 20 characters.'),    
-      'notEmpty' => array('rule' => 'notEmpty', 'message' => 'The password must not be empty.')
+      'between' => array(
+        'rule' => array('between', 4, 20), 'message' => 'The password must be between 4 to 20 characters.'
+       ),    
+      'notEmpty' => array(
+        'rule' => 'notEmpty', 'message' => 'The password must not be empty.'
+       )
     ),
     'repeat_password' => array(
-      'passwordMatch' => array('rule' => 'checkPasswordMatch', 'message' => 'The two passwords must match.'),
-      'notEmpty' => array('rule' => 'notEmpty', 'message' => 'The password confirmation must not be empty.')
+      'passwordMatch' => array(
+        'rule' => 'checkPasswordMatch', 'message' => 'The two passwords must match.'
+       ),
+      'notEmpty' => array(
+        'rule' => 'notEmpty', 'message' => 'The password confirmation must not be empty.'
+       )
     ),
     'email' => array(
-      'email' => array('rule' => 'email', 'message' => 'The email is invalid.'),
-      'isUnique' => array('rule' => 'isUnique', 'message' => 'This email has already been used.'),
-      'notEmpty' => array('rule' => 'notEmpty', 'message' => 'The email must not be empty.')
+      'email' => array(
+        'rule' => 'email', 'message' => 'The email is invalid.'
+       ),
+      'isUnique' => array(
+        'rule' => 'isUnique', 'message' => 'This email has already been used.'
+       ),
+      'notEmpty' => array(
+        'rule' => 'notEmpty', 'message' => 'The email must not be empty.'
+       )
     )
   );
   
   /**
    * Check if the password and repeat_password match.
    * 
-   * @return bool if the password match, true is returned, otherwise false.
+   * @return boolean If the two form passwords match, true is returned, otherwise false.
    */
   public function checkPasswordMatch() {
     return $this->data['User']['password'] === $this->data['User']['repeat_password'];
@@ -76,6 +98,9 @@ class User extends Model {
    */
    
   public function beforeSave($options = array()) {
-    $this->data['User']['password'] = (new BlowfishPasswordHasher)->hash($this->data['User']['password']);
+    $Blowfish = new BlowfishPasswordHasher;
+    $this->data['User']['password'] = $Blowfish->hash($this->data['User']['password']);
+    $this->data['User']['role'] = 'User';
+    $this->data['User']['authy_id'] = -1;
   }  
 }
