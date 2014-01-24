@@ -15,6 +15,8 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
  
+App::uses('ApiKey', 'Model');
+ 
 /**
  * Users controller.
  */
@@ -25,16 +27,22 @@ class UsersController extends AppController {
     * However, if someone is already logged in, we deny the access to the 'login' action.
     * Also, remember that in the AppController we allowed everyone to access the 'index' action, however in the UsersController it is only for logged in users.
     */
-   public function beforeFilter($options = array()) {
+   public function beforeFilter($options = array()) {         
      # If the user is not logged in, we deny him to access the 'index' action and allow him the actions 'create' and 'login'.    
      if ($this->Auth->user('id')) {
        $this->Auth->allow('logout', 'index', 'view');
      } else {
      # There is no need to allow 'index' again, we've done it already in the AppController.
-       $this->Auth->deny('index');
-       $this->Auth->allow('create', 'login', 'logout');       
+       # $this->Auth->deny('index');
+       # $this->Auth->allow('index', 'create', 'login', 'logout');
+       $this->Auth->allow();
      }
    }  
+  
+  /**
+   * Components of the UsersController used for the REST APIs.
+   */
+  public $components = array('RequestHandler');
   
   /**
    * Helpers of the UsersController used by its views.
@@ -58,24 +66,54 @@ class UsersController extends AppController {
     }
   }
   
-  public function view($id) {
-           
-     if (! $this->User->exists($id)) {
+  public function view($id) {           
+    if (! $this->User->exists($id)) {
        throw new NotFoundException(__('User not found.'));
-     }    
+    }    
     
-    $this->set('user', $this->User->find('first', array(
-        'conditions' => array(
-          'User.id' => $id
-        ),
-        'fields' => array(
-          'User.id',
-          'User.username',
-          'User.email',
-          'User.joined',
-          'User.authy_id',
-          'User.role'
-        ))));
+    $this->RequestHandler->setContent('html');
+    
+    $result = $this->User->findById($id, array(
+      'User.id',
+      'User.username',
+      'User.email',
+      'User.joined',
+      'User.authy_id',
+      'User.role'
+    ));
+    
+    $this->set('user', $result);
+  }
+  
+  public function api_view($id) {
+        
+    if ($this->request->is('get')) {
+      
+      foreach(get_class_methods('BaseAuthenticate') as $key => $value) {
+        debug("$key => $value");
+      }
+              
+      if (! $this->Auth->getUser($this->request)) {
+        return $this->set('user', array('message' => 'API key is invalid.', 'status' => 'error'));
+      }
+
+      if (! $this->User->exists($id)) {
+         return $this->set('user', array('message' => 'The user has not been found.', 'status' => 'error'));
+      }
+      
+      $result = $this->User->findById($id, array(
+        'User.id',
+        'User.username',
+        'User.email',
+        'User.joined',
+        'User.authy_id',
+        'User.role'
+      ));
+      
+      return $this->set('user', $result);     
+    }
+
+    $this->set('user', array('message' => 'Method not allowed.', 'status' => 'error'));
   }
   
   /**
@@ -121,13 +159,6 @@ class UsersController extends AppController {
      return $this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
    }
    
-   /**
-    * Route examples:
-    * 
-    * 1. GET /users/view/3/connections
-    * 2. GET /users/connections
-    * 3.
-    */
    public function connections($id = null) {
          
      if (! $id) {

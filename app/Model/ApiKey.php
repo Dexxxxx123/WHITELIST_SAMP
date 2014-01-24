@@ -15,12 +15,14 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+App::uses('AppModel', 'Model');
+ 
 /**
  * Api Key model.
  *
  *
  */
-class ApiKey extends Model {
+class ApiKey extends AppModel {
   
   /**
    * We need to define the table name manually otherwise CakePHP will recognize the table as ApiKeys instead of api_keys.
@@ -31,4 +33,5 @@ class ApiKey extends Model {
    * An ApiKey belongs to a single user.
    */
   public $belongsTo = 'User';
+  
 }

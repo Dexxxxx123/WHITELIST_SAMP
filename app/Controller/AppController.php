@@ -20,6 +20,7 @@
  */
 
 App::uses('Controller', 'Controller');
+App::uses('TokenAuthenticate', 'Authenticate.Controller/Component/Auth');
 
 /**
  * Application Controller
@@ -33,21 +34,12 @@ App::uses('Controller', 'Controller');
 class AppController extends Controller {
   
   /**
-   * By default, we are going to allow everyone to view the index page.
-   * If anything, we'll just be more detailed in who allowing what in every specific controller.
-   * We're also allowing display because we need it to show the static homepage.
-   */
-  public function beforeFilter($options = array()) {
-    $this->Auth->allow('index', 'display');
-  }  
-  
-  /**
    * Components used by the entire application.
    * 
    * @var array
    */
   public $components = array(
-    'Session',
+    'Session', 
     'Auth' => array(
       'authError' => 'You are not allowed to do that.',
       'loginAction' => array(
@@ -59,10 +51,30 @@ class AppController extends Controller {
         'action' => 'display', 'home'
       ),
       'authenticate' => array(
-        'form' => array(
+        'Authenticate.Token' => array(
+          'parameter' => 'api_key',
+          'header' => 'X-WhiteListApiToken',
+          'userModel' => 'ApiKey',
+          'continue' => true,
+          'fields' => array(
+            'username' => 'username', 
+            'token' => 'api_key'
+          )
+        ),      
+        'Form' => array(
+          'userModel' => 'User',
           'passwordHasher' => 'Blowfish'
-        )
-      )
-    )    
-  );
+        )       
+      )  
+    ) 
+  ); 
+  
+  /**
+   * By default, we are going to allow everyone to view the index page.
+   * If anything, we'll just be more detailed in who allowing what in every specific controller.
+   * We're also allowing display because we need it to show the static homepage.
+   */
+  public function beforeFilter($options = array()) {     
+    $this->Auth->allow('index', 'display');
+  }     
 }

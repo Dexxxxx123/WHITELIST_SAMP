@@ -21,7 +21,7 @@
  * @since         CakePHP(tm) v 0.10.8.2117
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
+ 
 // Setup a 'default' cache configuration for use in the application.
 Cache::config('default', array('engine' => 'File'));
 
@@ -69,6 +69,7 @@ Cache::config('default', array('engine' => 'File'));
  * CakePlugin::load('DebugKit'); //Loads a single plugin named DebugKit
  *
  */
+ CakePlugin::loadAll();
 
 /**
  * You can attach event listeners to the request lifecycle as Dispatcher Filter. By default CakePHP bundles two filters:

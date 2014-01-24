@@ -20,24 +20,44 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
  
-/**
- * Portal Homepage
- */
-	Router::connect('/', array('controller' => 'pages', 'action' => 'display', 'home'));
-
-/**
- * User Routes
- */
+  Router::connect('/', array('controller' => 'pages', 'action' => 'display', 'home'));
+  
   Router::connect('/users/register', array('controller' => 'users', 'action' => 'create'));
   Router::connect('/users/login', array('controller' => 'users', 'action' => 'login'));
   Router::connect('/users/logout', array('controller' => 'users', 'action' => 'logout'));
   
+  Router::connect('/api/:controller/:id', array('action' => 'view', 'prefix' => 'api', 'api' => true), array('pass' => array('id')));
+  Router::connect('/api/:controller/:id/:action/*', array('prefix' => 'api', 'api' => true), array('pass' => array('id')));   
+  
+  Router::connect('/:controller', array('action' => 'index'));
+  Router::connect('/:controller/:id', array('action' => 'view'), array('pass' => array('id')));
+  Router::connect('/:controller/:id/:action/*', array(), array('pass' => array('id'))); 
+  
+  Router::mapResources('users', array('prefix' => '/api/'));
+  Router::parseExtensions('json');  
+  
 /**
- * Global Routes
- */  
-  Router::connect('/:controller/:id', array('action' => 'view'), array('pass' => array('id'))); 
-  Router::connect('/:controller/:id/:action/*', array('pass' => array('id')));
+ * Portal Homepage
+ 
+  Router::connect('/', array('controller' => 'pages', 'action' => 'display', 'home'));
 
+  Router::connect('/api/:controller/*', array('action' => 'view', 'prefix' => 'api', 'api' => true)); 
+  Router::connect('/api/:controller/:id/:action/*', array('prefix' => 'api', 'api' => true), array('pass' => array('id')));
+
+**
+ * User Routes
+ *
+  Router::connect('/users/register', array('controller' => 'users', 'action' => 'create'));
+  Router::connect('/users/login', array('controller' => 'users', 'action' => 'login'));
+  Router::connect('/users/logout', array('controller' => 'users', 'action' => 'logout'));
+  
+**
+ * Global Routes
+ *
+  Router::connect('/:controller/:id', array('action' => 'view'), array('pass' => array('id'))); 
+  Router::connect('/:controller/:id/:action/*', array(), array('pass' => array('id')));
+  */
+  
 /**
  * Load all plugin routes. See the CakePlugin documentation on
  * how to customize the loading of plugin routes.
@@ -48,4 +68,4 @@
  * Load the CakePHP default routes. Only remove this if you do not want to use
  * the built-in default routes.
  */
-	require CAKE . 'Config' . DS . 'routes.php';
+	// require CAKE . 'Config' . DS . 'routes.php';
