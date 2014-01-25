@@ -35,7 +35,14 @@ class User extends Model {
    * 
    * @var string
    */
-  public $hasOne ='ApiKey';
+  public $hasOne = 'ApiKey';
+  
+  /**
+   * Recursion must be minus one so we don't query useless stuff unless we need it.
+   * 
+   * @var integer
+   */    
+  public $recursive = -1;
   
   /**
    * User model validations

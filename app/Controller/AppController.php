@@ -49,23 +49,7 @@ class AppController extends Controller {
       'logoutAction' => array(
         'controller' => 'pages',
         'action' => 'display', 'home'
-      ),
-      'authenticate' => array(
-        'Authenticate.Token' => array(
-          'parameter' => 'api_key',
-          'header' => 'X-WhiteListApiToken',
-          'userModel' => 'ApiKey',
-          'continue' => true,
-          'fields' => array(
-            'username' => 'username', 
-            'token' => 'api_key'
-          )
-        ),      
-        'Form' => array(
-          'userModel' => 'User',
-          'passwordHasher' => 'Blowfish'
-        )       
-      )  
+      )
     ) 
   ); 
   
@@ -74,7 +58,25 @@ class AppController extends Controller {
    * If anything, we'll just be more detailed in who allowing what in every specific controller.
    * We're also allowing display because we need it to show the static homepage.
    */
-  public function beforeFilter($options = array()) {     
+  public function beforeFilter($options = array()) {
+       
+    $this->Auth->authenticate = array(
+      'Authenticate.Token' => array(
+        'parameter' => 'api_key',
+        'header' => 'X-WhiteListApiToken',
+        'userModel' => 'ApiKey',
+        'recursive' => -1,
+        'fields' => array(
+          'username' => 'username', 
+          'token' => 'token'
+        )      
+      ),
+      'Form' => array(
+        'userModel' => 'User',
+        'passwordHasher' => 'Blowfish'
+      )      
+    );
+    
     $this->Auth->allow('index', 'display');
   }     
 }

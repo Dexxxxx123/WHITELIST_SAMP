@@ -27,7 +27,9 @@ class UsersController extends AppController {
     * However, if someone is already logged in, we deny the access to the 'login' action.
     * Also, remember that in the AppController we allowed everyone to access the 'index' action, however in the UsersController it is only for logged in users.
     */
-   public function beforeFilter($options = array()) {         
+   public function beforeFilter($options = array()) {    
+    parent::beforeFilter();
+              
      # If the user is not logged in, we deny him to access the 'index' action and allow him the actions 'create' and 'login'.    
      if ($this->Auth->user('id')) {
        $this->Auth->allow('logout', 'index', 'view');
@@ -89,25 +91,18 @@ class UsersController extends AppController {
         
     if ($this->request->is('get')) {
       
-      foreach(get_class_methods('BaseAuthenticate') as $key => $value) {
-        debug("$key => $value");
+      if (! $this->Auth->identify($this->request, $this->response)) {
+        return $this->set('user', array('message' => 'API key is invalid.', 'status' => 'error')); 
       }
-              
-      if (! $this->Auth->getUser($this->request)) {
-        return $this->set('user', array('message' => 'API key is invalid.', 'status' => 'error'));
-      }
-
-      if (! $this->User->exists($id)) {
-         return $this->set('user', array('message' => 'The user has not been found.', 'status' => 'error'));
-      }
-      
-      $result = $this->User->findById($id, array(
-        'User.id',
-        'User.username',
-        'User.email',
-        'User.joined',
-        'User.authy_id',
-        'User.role'
+                 
+      $result = $this->User->find('first', array(
+        'conditions' => array('User.id' => $id),
+        'recursive' => 1,
+        'fields' => array(
+          'User.id',
+          'User.username',
+          'User.joined',
+        )
       ));
       
       return $this->set('user', $result);     
