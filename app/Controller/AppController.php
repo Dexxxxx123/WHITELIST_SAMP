@@ -39,16 +39,18 @@ class AppController extends Controller {
    * @var array $components
    */
   public $components = array(
+    'DebugKit.Toolbar',
     'Session', 
     'Auth' => array(
       'authError' => 'You are not allowed to do that.',
       'loginAction' => array(
         'controller' => 'users',
-        'action' => 'index'
+        'action' => 'login',
+        'api' => false
       ),
       'logoutAction' => array(
-        'controller' => 'pages',
-        'action' => 'display', 'home'
+        'controller' => 'users',
+        'action' => 'logout'
       ),
       'authorize' => array('Controller')
     ) 
@@ -81,7 +83,7 @@ class AppController extends Controller {
       )      
     );
     
-    $this->Auth->allow('index', 'display');
+    $this->Auth->allow('display');
   } 
 
   /**
@@ -92,10 +94,14 @@ class AppController extends Controller {
    * @return boolean Administrators are always allowed.
    */
   public function isAuthorized($user) {
-    if (isset($user['role']) && $user['role'] === 'Administrator') {
-        return true;
+    if (isset($this->request->params['api']) && $this->request->params['api'] === true) {
+      return true;
     }
-    
-    return false;
+    if (isset($user['role']) && $user['role'] === 'Administrator') {
+      return true;
+    } else {
+      $this->Session->setFlash(__('You are not authorized to do so.'), 'default', array(), 'warning');      
+      return false;
+    }  
   }
 }

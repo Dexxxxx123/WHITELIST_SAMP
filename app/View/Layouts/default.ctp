@@ -49,7 +49,8 @@
         <div class="small-12 small-centered columns">
         <?= $this->Session->flash('success', array('element' => 'Flashes/success')); ?>
         <?= $this->Session->flash('notice', array('element' => 'Flashes/notice')); ?>
-        <?= $this->Session->flash('warning', 'auth', array('element' => 'Flashes/warning')); ?>
+        <?= $this->Session->flash('warning', array('element' => 'Flashes/warning')); ?>
+        <?= $this->Session->flash('auth', array('element' => 'Flashes/warning')); ?>
   
         <?= $this->fetch('content'); ?>
         </div>
@@ -74,6 +75,7 @@
         </div>
       </div>
       
+      <!--
       <?php if ($this->Session->read('Auth.User.role') == 'Administrator'): ?>
       <div class="row">
         <div class="small-12 small-centered text-center columns">                    
@@ -81,6 +83,7 @@
         </div>
       </div> 
       <?php endif; ?>
+      -->
   </footer>
 </body>
 </html>

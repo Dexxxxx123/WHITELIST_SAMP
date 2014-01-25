@@ -15,8 +15,6 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
  
-App::uses('ApiKey', 'Model');
- 
 /**
  * Users controller.
  */
@@ -30,16 +28,10 @@ class UsersController extends AppController {
     * @param array $options (optional)
     * @return void
     */
-  public function beforeFilter($options = array()) {    
-    parent::beforeFilter();
-                     
-    # If the user is not logged in, we deny him to access the 'index' action and allow him the actions 'create' and 'login'.    
-    if ($this->Auth->user('id')) {
-      $this->Auth->allow('logout', 'index', 'view');
-    } else {
-    # There is no need to allow 'index' again, we've done it already in the AppController.    
-      $this->Auth->allow('create', 'login', 'logout');
-    }
+  public function beforeFilter($options = array()) {
+    parent::beforeFilter();               
+    $this->Auth->allow('login', 'create');   
+    $this->Auth->deny('index');
   }  
   
   /**
@@ -61,12 +53,8 @@ class UsersController extends AppController {
    *
    * @return void
    */  
-  public function index() {   
-    if ($this->Auth->user('id')) {
-      return $this->redirect(array('controller' => 'users', 'action' => 'view', 'id' => $this->Auth->user('id')));
-    } else {
-      return $this->redirect(array('controller' => 'users', 'action' => 'login'));
-    }
+  public function index() {
+    return $this->redirect(array('controller' => 'users', 'action' => 'view', 'id' => $this->Auth->user('id')));
   }
 
   /**
@@ -76,7 +64,8 @@ class UsersController extends AppController {
    * @param integer $id The user id.
    * @return void
    */  
-  public function view($id) {           
+  public function view($id) {
+    
     if (! $this->User->exists($id)) {
       throw new NotFoundException(__('User not found.'));
     }    
@@ -103,18 +92,28 @@ class UsersController extends AppController {
    * @param integer $id The user id.
    * @return void
    */
-  public function connections($id) {              
-    if (! $this->User->exists($id)) {
-      throw new NotFoundException(__('User not found.'));
-    }             
+  public function connections($id) {
     
-    $result = ClassRegistry::init('Connection')->find('all', array(
-      'conditions' => array(
-        'Alias.user_id' => $id
-      )
-    ));
-    
-    $this->set('connections', $result);
+    if ($this->request->is('get')) {
+      if (! AuthComponent::user('token')) {  
+        if (AuthComponent::user('username')) {
+           return $this->set('user', array('message' => 'You must logout from the portal to use the API.', 'status' => 'error')); 
+        }                            
+        return $this->set('user', array('message' => 'API key is invalid.', 'status' => 'error')); 
+      }          
+      
+      if (! $this->User->exists($id)) {
+        return $this->set('user', array('message' => 'User not found.', 'status' => 'error')); 
+      }             
+      
+      $result = ClassRegistry::init('Connection')->find('all', array(
+        'conditions' => array(
+          'Alias.user_id' => $id
+        )
+      ));
+      
+      $this->set('connections', $result);
+    }
   } 
  
   /**
@@ -125,10 +124,18 @@ class UsersController extends AppController {
    * @return array
    */  
   public function api_view($id) {       
-    if ($this->request->is('get')) {          
-      if (! $this->Auth->identify($this->request, $this->response)) {
+    
+    if ($this->request->is('get')) {      
+      if (! AuthComponent::user('token')) {  
+        if (AuthComponent::user('username')) {
+           return $this->set('user', array('message' => 'You must logout from the portal to use the API.', 'status' => 'error')); 
+        }                            
         return $this->set('user', array('message' => 'API key is invalid.', 'status' => 'error')); 
       }
+      
+      if (! $this->User->exists($id)) {
+        return $this->set('user', array('message' => 'User not found.', 'status' => 'error')); 
+      }      
                                
       $result = $this->User->find('first', array(
         'conditions' => array('User.id' => $id),
@@ -151,6 +158,12 @@ class UsersController extends AppController {
    * @return boolean If the user logs in successfully is redirected to the user control panel (index action), otherwise nothing is returned.
    */
   public function create() {
+    
+    if ($this->Auth->user()) {
+      $this->Session->setFlash(__('You can not create an account, you are already logged in.'), 'default', array(), 'warning');   
+      return $this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
+    }
+    
     if ($this->request->is('post')) {
       $this->User->create();           
       if ($this->User->save($this->request->data)) {        
@@ -168,6 +181,12 @@ class UsersController extends AppController {
    * @return boolean If the user logs in successfully is redirected to the user control panel (index action), otherwise nothing is returned.
    */
    public function login() {
+     
+    if ($this->Auth->user()) {
+      $this->Session->setFlash(__('You can not login, you already are.'), 'default', array(), 'warning');   
+      return $this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
+    }
+     
      if ($this->request->is('post')) {
        if ($this->Auth->login()) {
          $this->Session->setFlash(__('You logged in successfully.'), 'default', array(), 'success');       
@@ -182,7 +201,7 @@ class UsersController extends AppController {
    * 
    * @return boolean If the user is logged in it gets logged out and returns true (from redirect action).
    */   
-  public function logout() {         
+  public function logout() {
     $this->Auth->logout();
     $this->Session->setFlash(__('You logged out successfully.'), 'default', array(), 'success');      
     return $this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
@@ -194,16 +213,13 @@ class UsersController extends AppController {
    * @param array $user This parameter is automatically filled by the controller (it's basically the user information).
    * @return boolean View action is always allowed. If the action user id matches to the logged in user, it returs true, otherwise parent::isAuthorized($user) is called.
    */
-  public function isAuthorized($user) {   
-    if ($this->action === 'view') {
-      return true;
-    }
+  public function isAuthorized($user) {
     if (in_array($this->action, array('settings', 'whitelist', 'request_api', 'connections'))) {
-      $userId = $this->request->params['pass'][0];
+      $userId = $this->request->params['id'];    
       if($userId === $user['id']) {
         return true;
       }
-    }    
+    }
     return parent::isAuthorized($user);
   }       
 }
