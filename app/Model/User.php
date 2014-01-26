@@ -26,28 +26,28 @@ class User extends Model {
   /**
    * An User has many aliases, if necessary.
    * 
-   * @var string
+   * @var string $hasMany
    */
   public $hasMany = 'Alias';
   
   /**
    * An User has only one ApiKey, if registered.
    * 
-   * @var string
+   * @var string $hasOne
    */
   public $hasOne = 'ApiKey';
   
   /**
    * Recursion must be minus one so we don't query useless stuff unless we need it.
    * 
-   * @var integer
+   * @var integer $recursive
    */    
   public $recursive = -1;
   
   /**
    * User model validations
    * 
-   * @var array
+   * @var array $validate
    */
   public $validate = array(
     'username' => array(
@@ -102,6 +102,9 @@ class User extends Model {
   /**
    * beforeSave callback is used in the User model to hash user passwords when registering in Blowfish.
    * Which is why we included BlowfishPasswordHasher earlier, outside of the class.
+   * 
+   * @param array $options (optional)
+   * @return void
    */
    
   public function beforeSave($options = array()) {

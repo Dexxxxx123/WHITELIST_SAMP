@@ -3,15 +3,15 @@
         <div class="small-12 small-centered text-center columns">
           <ul class="button-group [radius round]" style="list-style-type: none; text-align: center; display: inline-block;">
             <li><?= $this->Html->link('Index', 
-              array('controller' => 'pages', 'action' => 'display', 'home'), 
+              array('controller' => 'pages', 'action' => 'display', 'home', 'api' => false), 
               array('class' => 'button [tiny small large]')
             ); ?></li>
-            <li><?= $this->Html->link('UCP', 
-              array('controller' => 'users', 'action' => 'index'), 
+            <li><?= $this->Html->link('Profile', 
+              array('controller' => 'users', 'action' => 'index', 'api' => false), 
               array('class' => 'button [tiny small large]')
             ); ?></li> 
              <li><?= $this->Html->link('Logout', 
-              array('controller' => 'users', 'action' => 'logout'), 
+              array('controller' => 'users', 'action' => 'logout', 'api' => false), 
               array('class' => 'button [tiny small large]')
             ); ?></li>             
           </ul>
@@ -30,15 +30,15 @@
         <div class="small-12 small-centered text-center columns">
           <ul class="button-group [radius round]" style="list-style-type: none; text-align: center; display: inline-block;">
             <li><?= $this->Html->link('Index', 
-              array('controller' => 'pages', 'action' => 'display', 'home'), 
+              array('controller' => 'pages', 'action' => 'display', 'home', 'api' => false), 
               array('class' => 'button [tiny small large]')
             ); ?></li>
             <li><?= $this->Html->link('Register', 
-              array('controller' => 'users', 'action' => 'create'), 
+              array('controller' => 'users', 'action' => 'create', 'api' => false), 
               array('class' => 'button [tiny small large]')
             ); ?></li>
             <li><?= $this->Html->link('Login', 
-              array('controller' => 'users', 'action' => 'login'), 
+              array('controller' => 'users', 'action' => 'login', 'api' => false), 
               array('class' => 'button [tiny small large]')
             ); ?></li>                              
           </ul>

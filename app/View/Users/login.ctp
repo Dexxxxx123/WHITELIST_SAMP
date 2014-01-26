@@ -1,4 +1,4 @@
-<?php echo $this->Session->flash('auth'); ?>
+<?php echo $this->Session->flash('auth', array('element' => 'Flashes/warning')); ?>
 <?php echo $this->Form->create('User'); ?>
     <fieldset>
         <legend>

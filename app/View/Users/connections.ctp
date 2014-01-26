@@ -1,24 +1,25 @@
 <div class="row">
-  <div class="medium-2 columns" style="border-right: 1px solid grey;">
-    <ul class="side-nav">
-      <li><a href="#">Account Settings</a></li>
-      <li><a href="#">Connections</a></li>
-      <li><a href="#">Whitelist Status</a></li>
-      <li><a href="#">Request API</a></li>
-    </ul>
-  </div>
-  <div class="medium-4 columns">
-    <strong>Username:</strong> <br><br>
-    <strong>Email:</strong> <br><br>
-    <strong>Joined:</strong> <br><br>
-    <strong>Permissions:</strong> <br><br>
-    <strong>Two-Factor Authentication:</strong>
-  </div> 
-  <div class="medium-4 columns">
-    <?= $user['User']['username'] ?> <br><br>
-    <?= $user['User']['email'] ?> <br><br>
-    <span title="<?= $user['User']['joined'] ?>"><?= $this->Time->timeAgoInWords($user['User']['joined']) ?></span> <br><br>
-    <?= $user['User']['role'] ?> <br><br>
-    <?= ($user['User']['authy_id'] == -1) ? 'Inactive' : 'Active' ?> <br><br>
+  <?= $this->element('Users/sidenav'); ?>
+  <div class="medium-10 large-centered columns">
+    <table>
+      <thead>
+        <tr>
+          <th width="1%">ID</th>
+          <th width="15%">IP</th>
+          <th width="40%">Alias</th>
+          <th width="30%">Date</th>
+        </tr>       
+      </thead>
+      <tbody>
+        <?php foreach($connections as $connection): ?>
+        <tr>
+          <td><?= $connection['Connection']['id']; ?></td>
+          <td><?= $connection['Connection']['address']; ?></td>
+          <td><?= $connection['Alias']['alias']; ?></td>
+          <td><?= $this->Time->timeAgoInWords($connection['Connection']['date']); ?></td>
+        </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
   </div>
 </div>

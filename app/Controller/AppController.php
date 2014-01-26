@@ -36,7 +36,7 @@ class AppController extends Controller {
   /**
    * Components used by the entire application.
    * 
-   * @var array
+   * @var array $components
    */
   public $components = array(
     'Session', 
@@ -49,7 +49,8 @@ class AppController extends Controller {
       'logoutAction' => array(
         'controller' => 'pages',
         'action' => 'display', 'home'
-      )
+      ),
+      'authorize' => array('Controller')
     ) 
   ); 
   
@@ -57,6 +58,9 @@ class AppController extends Controller {
    * By default, we are going to allow everyone to view the index page.
    * If anything, we'll just be more detailed in who allowing what in every specific controller.
    * We're also allowing display because we need it to show the static homepage.
+   * 
+   * @var array $options (optional)
+   * @return void
    */
   public function beforeFilter($options = array()) {
        
@@ -78,5 +82,20 @@ class AppController extends Controller {
     );
     
     $this->Auth->allow('index', 'display');
-  }     
+  } 
+
+  /**
+   * AppController's isAuthorized is executed by children controllers.
+   * 
+   * @see UsersController::isAuthorized($user)
+   * @param array $user This parameter is automatically filled by the controller (it's basically the user information).
+   * @return boolean Administrators are always allowed.
+   */
+  public function isAuthorized($user) {
+    if (isset($user['role']) && $user['role'] === 'Administrator') {
+        return true;
+    }
+    
+    return false;
+  }
 }
