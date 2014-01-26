@@ -1,7 +1,7 @@
 <div class="row">
   <?php if ($this->Session->read('Auth.User.id') == $user['User']['id']): ?>
   <?= $this->element('Users/sidenav'); ?>
-  <div class="medium-4 columns">
+  <div class="medium-6 columns">
     <strong>Username:</strong> <br><br>
     <strong>Email:</strong> <br><br>
     <strong>Joined:</strong> <br><br>

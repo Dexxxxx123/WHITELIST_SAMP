@@ -28,7 +28,6 @@
   
   Router::connect('/api/:controller/:id', array('action' => 'view', 'prefix' => 'api', 'api' => true), array('pass' => array('id')));
   Router::connect('/api/:controller/:id/:action', array('prefix' => 'api', 'api' => true), array('pass' => array('id')));
-
   
   Router::connect('/:controller', array('action' => 'index'));
   Router::connect('/:controller/:id', array('action' => 'view'), array('pass' => array('id')));

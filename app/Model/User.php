@@ -98,6 +98,19 @@ class User extends Model {
   public function checkPasswordMatch() {
     return $this->data['User']['password'] === $this->data['User']['repeat_password'];
   }
+
+  /**
+   * beforeValidate callback is used in the User model to make checks before a validation is executed.
+   * 
+   * @param array $options (optional)
+   * @return void
+   */   
+  public function beforeValidate($options = array()) {
+    if (isset($this->data['User']['current_email']) && $this->data['User']['email'] === $this->data['User']['current_email']) {
+      unset($this->validate['email']);
+    }
+    return true;
+  }
    
   /**
    * beforeSave callback is used in the User model to hash user passwords when registering in Blowfish.
@@ -106,11 +119,15 @@ class User extends Model {
    * @param array $options (optional)
    * @return void
    */
-   
-  public function beforeSave($options = array()) {
+  public function beforeSave($options = array()) {   
+    if (isset($this->data['User']['current_username']) && $this->data['User']['username'] !== $this->data['User']['current_username']) {
+      return false;
+    }
+    
     $Blowfish = new BlowfishPasswordHasher;
     $this->data['User']['password'] = $Blowfish->hash($this->data['User']['password']);
     $this->data['User']['role'] = 'User';
     $this->data['User']['authy_id'] = -1;
+    return true;
   }  
 }

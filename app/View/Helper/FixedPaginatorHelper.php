@@ -9,6 +9,9 @@ class FixedPaginatorHelper extends PaginatorHelper {
     $model = $options['model'];
     unset($options['model']);      
 
+    # if (!empty($this->options)) {
+    #  $options = array_merge($this->options, $options);    
+    #}
     if (isset($options['url'])) {
       $url = array_merge((array)$options['url'], (array)$url);
       unset($options['url']);   
@@ -20,6 +23,6 @@ class FixedPaginatorHelper extends PaginatorHelper {
 
     $obj = isset($options['update']) ? $this->_ajaxHelperClass : 'Html';
     return $this->{$obj}->link($title, $url, $options);
-  }  
+  } 
   
 }

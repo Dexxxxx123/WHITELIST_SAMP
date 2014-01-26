@@ -63,6 +63,61 @@ class UsersController extends AppController {
   public function index() {
     return $this->redirect(array('controller' => 'users', 'action' => 'view', 'id' => $this->Auth->user('id')));
   }
+  
+  /**
+   * The register action shows a register form page (if GET request) if the user is not logged in.
+   * 
+   * @return boolean If the user logs in successfully is redirected to the user control panel (index action), otherwise nothing is returned.
+   */
+  public function create() {
+    
+    if ($this->Auth->user()) {
+      $this->Session->setFlash(__('You can not create an account, you are already logged in.'), 'default', array(), 'warning');   
+      return $this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
+    }
+    
+    if ($this->request->is('post')) {
+      $this->User->create();           
+      if ($this->User->save($this->request->data)) {        
+        $this->Session->setFlash(__('The user has been created.'), 'default', array(), 'success');       
+        $this->Auth->login();        
+        return $this->redirect(array('action' => 'index'));
+      }      
+      $this->Session->setFlash(__('The user could not be created. Please, try again.'), 'default', array(), 'warning');      
+    }
+  }
+  
+  /**
+   * The login action shows a login form page (if GET request) if the user is not logged in.
+   * 
+   * @return boolean If the user logs in successfully is redirected to the user control panel (index action), otherwise nothing is returned.
+   */
+   public function login() {
+     
+    if ($this->Auth->user()) {
+      $this->Session->setFlash(__('You can not login, you already are.'), 'default', array(), 'warning');   
+      return $this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
+    }
+     
+     if ($this->request->is('post')) {
+       if ($this->Auth->login()) {
+         $this->Session->setFlash(__('You logged in successfully.'), 'default', array(), 'success');       
+         return $this->redirect($this->Auth->redirect());
+       }
+       $this->Session->setFlash(__('Username or password are wrong.'), 'default', array(), 'warning');
+     }
+   }
+   
+  /**
+   * The logout action logs off a user from the portal.
+   * 
+   * @return boolean If the user is logged in it gets logged out and returns true (from redirect action).
+   */   
+  public function logout() {
+    $this->Auth->logout();
+    $this->Session->setFlash(__('You logged out successfully.'), 'default', array(), 'success');      
+    return $this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
+  }
 
   /**
    * The view action shows the profile of a user, if logged in.
@@ -89,6 +144,68 @@ class UsersController extends AppController {
     ));
     
     $this->set('user', $result);
+  }
+
+  /**
+   * The API view action shows the information of a user, if the API is valid.
+   * API is available only in JSON.
+   *
+   * @param integer $id The user id.
+   * @return array
+   */  
+  public function api_view($id) {       
+    
+    if ($this->request->is('get')) {      
+      if (! AuthComponent::user('token')) {  
+        if (AuthComponent::user('username')) {
+           return $this->set('user', array('message' => 'You must logout from the portal to use the API.', 'status' => 'error')); 
+        }                            
+        return $this->set('user', array('message' => 'API key is invalid.', 'status' => 'error')); 
+      }
+      
+      if (! $this->User->exists($id)) {
+        return $this->set('user', array('message' => 'User not found.', 'status' => 'error')); 
+      }      
+                               
+      $result = $this->User->find('first', array(
+        'conditions' => array('User.id' => $id),
+        'recursive' => 1,
+        'fields' => array(
+          'User.id',
+          'User.username',
+          'User.joined',
+        )
+      ));
+             
+      return $this->set('user', $result);     
+    }   
+    $this->set('user', array('message' => 'Method not allowed.', 'status' => 'error'));
+  }
+
+  public function settings($id) {
+    
+    if (! $this->User->exists($id)) {
+      throw new NotFoundExcepetion(__('User not found.'));      
+    }
+    
+    $user = $this->User->findById($id, array(
+      'User.username',
+      'User.email'
+    ));
+    
+    if ($this->request->is('post', 'put')) {
+      $this->request->data['User']['current_email'] = $user['User']['email'];
+      $this->request->data['User']['current_username'] = $user['User']['username'];
+      if ($this->User->save($this->request->data)) {        
+        $this->Session->setFlash(__('User settings successfully changed.'), 'default', array(), 'success');          
+      } else {
+        $this->request->data = array_merge($this->request->data, $user);        
+      }
+    }
+    
+    if (!$this->request->data) {
+      $this->request->data = $user;
+    }    
   }
 
   /**
@@ -149,97 +266,6 @@ class UsersController extends AppController {
       
       $this->set('connections', $result);
     }
-  }  
- 
-  /**
-   * The API view action shows the information of a user, if the API is valid.
-   * API is available only in JSON.
-   *
-   * @param integer $id The user id.
-   * @return array
-   */  
-  public function api_view($id) {       
-    
-    if ($this->request->is('get')) {      
-      if (! AuthComponent::user('token')) {  
-        if (AuthComponent::user('username')) {
-           return $this->set('user', array('message' => 'You must logout from the portal to use the API.', 'status' => 'error')); 
-        }                            
-        return $this->set('user', array('message' => 'API key is invalid.', 'status' => 'error')); 
-      }
-      
-      if (! $this->User->exists($id)) {
-        return $this->set('user', array('message' => 'User not found.', 'status' => 'error')); 
-      }      
-                               
-      $result = $this->User->find('first', array(
-        'conditions' => array('User.id' => $id),
-        'recursive' => 1,
-        'fields' => array(
-          'User.id',
-          'User.username',
-          'User.joined',
-        )
-      ));   
-             
-      return $this->set('user', $result);     
-    }   
-    $this->set('user', array('message' => 'Method not allowed.', 'status' => 'error'));
-  }
-  
-  /**
-   * The register action shows a register form page (if GET request) if the user is not logged in.
-   * 
-   * @return boolean If the user logs in successfully is redirected to the user control panel (index action), otherwise nothing is returned.
-   */
-  public function create() {
-    
-    if ($this->Auth->user()) {
-      $this->Session->setFlash(__('You can not create an account, you are already logged in.'), 'default', array(), 'warning');   
-      return $this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
-    }
-    
-    if ($this->request->is('post')) {
-      $this->User->create();           
-      if ($this->User->save($this->request->data)) {        
-        $this->Session->setFlash(__('The user has been created.'), 'default', array(), 'success');       
-        $this->Auth->login();        
-        return $this->redirect(array('action' => 'index'));
-      }      
-      $this->Session->setFlash(__('The user could not be created. Please, try again.'), 'default', array(), 'warning');      
-    }
-  }
-  
-  /**
-   * The login action shows a login form page (if GET request) if the user is not logged in.
-   * 
-   * @return boolean If the user logs in successfully is redirected to the user control panel (index action), otherwise nothing is returned.
-   */
-   public function login() {
-     
-    if ($this->Auth->user()) {
-      $this->Session->setFlash(__('You can not login, you already are.'), 'default', array(), 'warning');   
-      return $this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
-    }
-     
-     if ($this->request->is('post')) {
-       if ($this->Auth->login()) {
-         $this->Session->setFlash(__('You logged in successfully.'), 'default', array(), 'success');       
-         return $this->redirect($this->Auth->redirect());
-       }
-       $this->Session->setFlash(__('Username or password are wrong.'), 'default', array(), 'warning');
-     }
-   }
-   
-  /**
-   * The logout action logs off a user from the portal.
-   * 
-   * @return boolean If the user is logged in it gets logged out and returns true (from redirect action).
-   */   
-  public function logout() {
-    $this->Auth->logout();
-    $this->Session->setFlash(__('You logged out successfully.'), 'default', array(), 'success');      
-    return $this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
   }
    
   /**
