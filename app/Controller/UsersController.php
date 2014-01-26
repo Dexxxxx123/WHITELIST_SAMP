@@ -39,14 +39,21 @@ class UsersController extends AppController {
    * 
    * @var array $components
    */
-  public $components = array('RequestHandler');
+  public $components = array('RequestHandler', 'Paginator');
+  
+  /**
+   * Settings of the PaginatorComponent.
+   * 
+   * @var $array $paginate
+   */
+
   
   /**
    * Helpers of the UsersController used by its views.
    * 
    * @var array $helpers
    */
-  public $helpers = array('Html', 'Form', 'Time');
+  public $helpers = array('Html', 'Form', 'Time', 'Paginator' => array('className' => 'FixedPaginator'));
   
   /**
    * The index action redirects the user to the view action (user control panel) of the user itself, if logged in.
@@ -93,6 +100,34 @@ class UsersController extends AppController {
    * @return void
    */
   public function connections($id) {
+    if (! $this->User->exists($id)) {
+      throw new NotFoundException(__('User not found.'));
+    }                  
+    
+    $this->Paginator->settings = array(
+      'paramType' => 'querystring',
+      'conditions' => array('Alias.user_id' => $id)
+     );
+     
+    $result = 0;
+    try {
+        $result = $this->Paginator->paginate(ClassRegistry::init('Connection'));
+    } catch (NotFoundException $e) {
+      $this->Session->setFlash(__('The records you tried to access were invalid.'), 'default', array(), 'notice'); 
+      return $this->redirect(array('controller' => 'users', 'action' => 'connections', 'id' => $this->Auth->user('id')));
+    }
+
+    $this->set('connections', $result);
+  } 
+ 
+  /**
+   * The API connections action shows the connections of a user, if the API is valid.
+   * API is available only in JSON.
+   *
+   * @param integer $id The user id.
+   * @return array
+   */    
+  public function api_connections($id) {
     
     if ($this->request->is('get')) {
       if (! AuthComponent::user('token')) {  
@@ -104,7 +139,7 @@ class UsersController extends AppController {
       
       if (! $this->User->exists($id)) {
         return $this->set('user', array('message' => 'User not found.', 'status' => 'error')); 
-      }             
+      }                    
       
       $result = ClassRegistry::init('Connection')->find('all', array(
         'conditions' => array(
@@ -114,7 +149,7 @@ class UsersController extends AppController {
       
       $this->set('connections', $result);
     }
-  } 
+  }  
  
   /**
    * The API view action shows the information of a user, if the API is valid.
