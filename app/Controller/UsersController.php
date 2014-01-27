@@ -42,13 +42,6 @@ class UsersController extends AppController {
   public $components = array('RequestHandler', 'Paginator');
   
   /**
-   * Settings of the PaginatorComponent.
-   * 
-   * @var $array $paginate
-   */
-
-  
-  /**
    * Helpers of the UsersController used by its views.
    * 
    * @var array $helpers
@@ -61,7 +54,7 @@ class UsersController extends AppController {
    * @return void
    */  
   public function index() {
-    return $this->redirect(array('controller' => 'users', 'action' => 'view', $this->Auth->user('id')));
+    return $this->redirect(array('controller' => 'users', 'action' => 'view', $this->Auth->user('username')));
   }
   
   /**
@@ -70,7 +63,7 @@ class UsersController extends AppController {
    * @return boolean If the user logs in successfully is redirected to the user control panel (index action), otherwise nothing is returned.
    */
   public function create() {
-    
+
     if ($this->Auth->user()) {
       $this->Session->setFlash(__('You can not create an account, you are already logged in.'), 'default', array(), 'warning');   
       return $this->redirect(array('controller' => 'pages', 'action' => 'display', 'home'));
@@ -121,18 +114,19 @@ class UsersController extends AppController {
 
   /**
    * The view action shows the profile of a user, if logged in.
-   * If the user id matches to the one that is logged in with, the user control panel is shown.
+   * If the username matches to the one that is logged in with, the user control panel is shown.
    *
-   * @param integer $id The user id.
+   * @param string $username The user's name.
    * @return void
    */  
-  public function view($id) {
+  public function view($username) {
     
-    if (! $this->User->exists($id)) {
+    $count = $this->User->find('count', array('conditions' => array('User.username' => $username)));   
+    if (empty($count)) {
       throw new NotFoundException(__('User not found.'));
     }
     
-    $result = $this->User->findById($id, array(
+    $result = $this->User->findByUsername($username, array(
       'User.id',
       'User.username',
       'User.email',
@@ -148,25 +142,26 @@ class UsersController extends AppController {
    * The API view action shows the information of a user, if the API is valid.
    * API is available only in JSON.
    *
-   * @param integer $id The user id.
+   * @param string $username The user's name.
    * @return array
    */  
-  public function api_view($id) {       
-    
+  public function api_view($username) {           
     if ($this->request->is('get')) {      
       if (! AuthComponent::user('token')) {  
         if (AuthComponent::user('username')) {
-           return $this->set('user', array('message' => 'You must logout from the portal to use the API.', 'status' => 'error')); 
+          return $this->set('user', array('message' => 'You must logout from the portal to use the API.', 'status' => 'error')); 
         }                            
         return $this->set('user', array('message' => 'API key is invalid.', 'status' => 'error')); 
       }
-      
-      if (! $this->User->exists($id)) {
+ 
+     
+      $count = $this->User->find('count', array('conditions' => array('User.username' => $username)));
+      if (empty($count)) {
         return $this->set('user', array('message' => 'User not found.', 'status' => 'error')); 
-      }      
-                               
+      }
+                     
       $result = $this->User->find('first', array(
-        'conditions' => array('User.id' => $id),
+        'conditions' => array('User.username' => $username),
         'recursive' => 1,
         'fields' => array(
           'User.id',
@@ -183,16 +178,17 @@ class UsersController extends AppController {
   /**
    * The settings action shows the user setting form for his own account.
    *
-   * @param integer $id The user id.
+   * @param string $username The user's name.
    * @return void
    */
-  public function settings($id) {
-    
-    if (! $this->User->exists($id)) {
+  public function settings($username) {
+
+    $count = $this->User->find('count', array('conditions' => array('User.username' => $username)));   
+    if (empty($count)) {
       throw new NotFoundExcepetion(__('User not found.'));      
     }
     
-    $user = $this->User->findById($id, array(
+    $user = $this->User->findByUsername($username, array(
       'User.username',
       'User.email'
     ));
@@ -214,20 +210,26 @@ class UsersController extends AppController {
 
   /**
    * The connections action shows the user connections to the servers that use WHITELIST_SAMP.
-   * If the user id matches to the one that is logged in with, the page is shown, otherwise 
+   * If the username matches to the one that is logged in with, the page is shown, otherwise
    * the user is redirected to the homepage access denied is given.
    *
-   * @param integer $id The user id.
+   * @param string $username The user's name.
    * @return void
    */
-  public function connections($id) {
-    if (! $this->User->exists($id)) {
-      throw new NotFoundException(__('User not found.'));
-    }                  
+  public function connections($username) {
+    
+    $result = $this->User->find('first', array(
+      'conditions' => array('User.username' => $username), 
+      'fields' => 'User.id'
+      )
+    );    
+    if (empty($result)) {
+      throw new NotFoundExcepetion(__('User not found.'));      
+    }           
     
     $this->Paginator->settings = array(
       'paramType' => 'querystring',
-      'conditions' => array('Alias.user_id' => $id),
+      'conditions' => array('Alias.user_id' => $result['User']['id']),
       'maxLimit' => 25
      );
      
@@ -243,21 +245,26 @@ class UsersController extends AppController {
   }
   
   /**
-   * The whitelist action shows the user all the bans saved in the database on his user id.
+   * The whitelist action shows the user all the bans saved in the database on his username.
    *
-   * @param integer $id The user id.
+   * @param string $username The user's name.
    * @return void
    */  
-  public function whitelist($id) {
-    
-    if (! $this->User->exists($id)) {
-      throw new NotFoundException(__('User not found.'));
-    }   
+  public function whitelist($username) {
+
+    $result = $this->User->find('first', array(
+      'conditions' => array('User.username' => $username), 
+      'fields' => 'User.id'
+      )
+    );    
+    if (empty($result)) {
+      throw new NotFoundExcepetion(__('User not found.'));      
+    }
     
     $this->Paginator->settings = array(
       'paramType' => 'querystring',
       'conditions' => array(
-        'Ban.user_id' => $id,
+        'Ban.user_id' => $result['User']['id'],
         'Ban.status' => 1,       
       ),
       'fields' => array(
@@ -267,7 +274,7 @@ class UsersController extends AppController {
         'Ban.date'
       ),
       'maxLimit' => 25
-     );
+    );
      
     $result = 0;
     try {
@@ -279,14 +286,26 @@ class UsersController extends AppController {
     
     $this->set('whitelist', $result);
   }
-  
-  public function request_api($id) {
-    if ($this->request->is('post')) {
-            
+ 
+  /**
+   * The request_api action shows the user the Terms of Service of the API server and the registration form.
+   *
+   * @param string $username The user's name.
+   * @return void
+   */    
+  public function request_api($username) {
+    if ($this->request->is('post')) {            
       $ApiKey = ClassRegistry::init('ApiKey');
+      
+      $result = $this->User->find('first', array(
+        'conditions' => array('User.username' => $username), 
+        'fields' => 'User.id'
+        )
+      );
+      
       $count = $ApiKey->find('count', array(
         'conditions' => array(
-          'ApiKey.user_id' => $id
+          'ApiKey.user_id' => $result['User']['id']
         )
       ));
       
@@ -298,28 +317,26 @@ class UsersController extends AppController {
         'conditions' => array(
           'ApiKey.address' => $this->request->data['ApiKey']['address']
         )
-      ));
-      
+      ));     
       if (! empty($count)) {
         return $this->Session->setFlash(__('This server address already has got an API key registered.'), 'default', array(), 'warning'); 
       }
       
       $count = 1;           
-      while(!empty($count)) {
+      while(! empty($count)) {
         $apiToken = substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 10);
         $count = $ApiKey->find('count', array(
           'conditions' => array(
             'ApiKey.token' => $apiToken
           )
-        ));      
+        ));
       }
       
       $this->request->data['ApiKey']['token'] = $apiToken;
       $this->request->data['ApiKey']['permission'] = 'basic';     
-      $this->request->data['ApiKey']['user_id'] = $id;
+      $this->request->data['ApiKey']['user_id'] = $result['User']['id'];
       $ApiKey->create();
-      $ApiKey->save($this->request->data);
-      
+      $ApiKey->save($this->request->data);     
     }
   }  
  
@@ -338,7 +355,7 @@ class UsersController extends AppController {
            return $this->set('user', array('message' => 'You must logout from the portal to use the API.', 'status' => 'error')); 
         }                            
         return $this->set('user', array('message' => 'API key is invalid.', 'status' => 'error')); 
-      }          
+      }
       
       if (! $this->User->exists($id)) {
         return $this->set('user', array('message' => 'User not found.', 'status' => 'error')); 
@@ -364,8 +381,8 @@ class UsersController extends AppController {
    */
   public function isAuthorized($user) {
     if (in_array($this->action, array('settings', 'whitelist', 'request_api', 'connections'))) {
-      $userId = $this->request->params['pass'][0];
-      if($userId === $user['id']) {
+      $userName = $this->request->params['pass'][0];
+      if($userName === $user['username']) {
         return true;
       }
     }
