@@ -2,19 +2,29 @@ WHITELIST_SAMP
 ==============
 
 ### What is WHITELIST_SAMP?
-**WHITELIST_SAMP** is a global white portal to get rid of cheaters and generally users that hurt the user experience (by trolling, for example).
+**WHITELIST_SAMP** is a global whitelist portal to get rid of cheaters and generally users that hurt the user experience (by trolling, for example). It works like a centralized account system for San Andreas Multiplayer
 
 WHITELIST_SAMP _does not_ provide any form of real anti-cheat to servers.
 
 ### How does WHITELIST_SAMP work?
-WHITELIST_SAMP functionality is fairly simple. Once a user joins a server, if WHITELIST_SAMP is implement the server requests the user to register their WHITELIST_SAMP account in the server. An API sends WHITELIST_SAMP the user IP address, username, password (obviously hashed) and store it in the database. In this way, if a player changes nickname and the IPs match, it will be saved as alias in the database.
+In order to register an account in the whitelist, you'll need to visit (thiswebsite). Once the account is registered, you'll be done. Easy, right?
 
-Server administrators will be able to **request** a locally or globally (if their API allows them to) ban from the whitelist through APIs.
+Now, how does it work for developers? Developers will be able to request an API for their account. More information on the Terms of Service of the API will be found in the portal. Once the API is requested, they'll be able to do the following things:
 
-Local bans are unlimited for server developers, instead only trusted servers will be allowed to globally ban players from the whitelist.
+* Check if a user is registered in WHITELIST_SAMP and gather its information.
+* Check if a user is locally banned from their server or globally banned from WHITELIST_SAMP.
+* Locally ban a user from their server or globally (if the API key is allowed) in the whitelist.
+* Delete local bans (with the API) from their servers. The API service does not support removal of global bans.
 
-As said before, **WHITELIST_SAMP** does not have a _staff_ and it is community moderated. However, we allow everyone to contribute to the project. Please visit the Project Features wiki page to see what's missing for a stable release.
+In the future, two-factor authentication will be added as well.
+Now, how do you allow your API key to globally ban someone from the whitelist?
 
+Only trusted servers will be allowed to do so for security reasons.
+More information on this will be released in the portal.
+
+WHITELIST_SAMP functionality is fairly simple. Once a user joins a server, if WHITELIST_SAMP is implemented, the server requests the user to register their WHITELIST_SAMP account in the server. An API sends WHITELIST_SAMP the user IP address, username, password (obviously hashed) and store it in the database. In this way, if a player changes nickname and the IPs match, it will be saved as alias in the database.
+
+==============
 ### Developed with CakePHP
 [![CakePHP](http://cakephp.org/img/cake-logo.png)](http://www.cakephp.org)
 
