@@ -53,7 +53,7 @@ class UsersController extends AppController {
    * 
    * @var array $helpers
    */
-  public $helpers = array('Html', 'Form', 'Time', 'Paginator' => array('className' => 'FixedPaginator'));
+  public $helpers = array('Html', 'Form', 'Time', 'Paginator');
   
   /**
    * The index action redirects the user to the view action (user control panel) of the user itself, if logged in.
@@ -61,7 +61,7 @@ class UsersController extends AppController {
    * @return void
    */  
   public function index() {
-    return $this->redirect(array('controller' => 'users', 'action' => 'view', 'id' => $this->Auth->user('id')));
+    return $this->redirect(array('controller' => 'users', 'action' => 'view', $this->Auth->user('id')));
   }
   
   /**
@@ -130,9 +130,7 @@ class UsersController extends AppController {
     
     if (! $this->User->exists($id)) {
       throw new NotFoundException(__('User not found.'));
-    }    
-    
-    $this->RequestHandler->setContent('html');
+    }
     
     $result = $this->User->findById($id, array(
       'User.id',
@@ -144,7 +142,7 @@ class UsersController extends AppController {
     ));
     
     $this->set('user', $result);
-  }
+  }  
 
   /**
    * The API view action shows the information of a user, if the API is valid.
@@ -182,6 +180,12 @@ class UsersController extends AppController {
     $this->set('user', array('message' => 'Method not allowed.', 'status' => 'error'));
   }
 
+  /**
+   * The settings action shows the user setting form for his own account.
+   *
+   * @param integer $id The user id.
+   * @return void
+   */
   public function settings($id) {
     
     if (! $this->User->exists($id)) {
@@ -211,7 +215,7 @@ class UsersController extends AppController {
   /**
    * The connections action shows the user connections to the servers that use WHITELIST_SAMP.
    * If the user id matches to the one that is logged in with, the page is shown, otherwise 
-   * the user is redirected to the homepage access denied is given..
+   * the user is redirected to the homepage access denied is given.
    *
    * @param integer $id The user id.
    * @return void
@@ -223,7 +227,8 @@ class UsersController extends AppController {
     
     $this->Paginator->settings = array(
       'paramType' => 'querystring',
-      'conditions' => array('Alias.user_id' => $id)
+      'conditions' => array('Alias.user_id' => $id),
+      'maxLimit' => 25
      );
      
     $result = 0;
@@ -231,11 +236,92 @@ class UsersController extends AppController {
         $result = $this->Paginator->paginate(ClassRegistry::init('Connection'));
     } catch (NotFoundException $e) {
       $this->Session->setFlash(__('The records you tried to access were invalid.'), 'default', array(), 'notice'); 
-      return $this->redirect(array('controller' => 'users', 'action' => 'connections', 'id' => $this->Auth->user('id')));
+      return $this->redirect(array('controller' => 'users', 'action' => 'connections', $id));
     }
 
     $this->set('connections', $result);
-  } 
+  }
+  
+  /**
+   * The whitelist action shows the user all the bans saved in the database on his user id.
+   *
+   * @param integer $id The user id.
+   * @return void
+   */  
+  public function whitelist($id) {
+    
+    if (! $this->User->exists($id)) {
+      throw new NotFoundException(__('User not found.'));
+    }   
+    
+    $this->Paginator->settings = array(
+      'paramType' => 'querystring',
+      'conditions' => array(
+        'Ban.user_id' => $id,
+        'Ban.status' => 1,       
+      ),
+      'fields' => array(
+        'Ban.id',
+        'Ban.address',
+        'Ban.type',
+        'Ban.date'
+      ),
+      'maxLimit' => 25
+     );
+     
+    $result = 0;
+    try {
+        $result = $this->Paginator->paginate(ClassRegistry::init('Ban'));
+    } catch (NotFoundException $e) {
+      $this->Session->setFlash(__('The records you tried to access were invalid.'), 'default', array(), 'notice'); 
+      return $this->redirect(array('controller' => 'users', 'action' => 'whitelist', $id));
+    }     
+    
+    $this->set('whitelist', $result);
+  }
+  
+  public function request_api($id) {
+    if ($this->request->is('post')) {
+            
+      $ApiKey = ClassRegistry::init('ApiKey');
+      $count = $ApiKey->find('count', array(
+        'conditions' => array(
+          'ApiKey.user_id' => $id
+        )
+      ));
+      
+      if (! empty($count)) {
+        return $this->Session->setFlash(__('You already have got an API key registered.'), 'default', array(), 'warning'); 
+      }
+      
+      $count = $ApiKey->find('count', array(
+        'conditions' => array(
+          'ApiKey.address' => $this->request->data['ApiKey']['address']
+        )
+      ));
+      
+      if (! empty($count)) {
+        return $this->Session->setFlash(__('This server address already has got an API key registered.'), 'default', array(), 'warning'); 
+      }
+      
+      $count = 1;           
+      while(!empty($count)) {
+        $apiToken = substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 10);
+        $count = $ApiKey->find('count', array(
+          'conditions' => array(
+            'ApiKey.token' => $apiToken
+          )
+        ));      
+      }
+      
+      $this->request->data['ApiKey']['token'] = $apiToken;
+      $this->request->data['ApiKey']['permission'] = 'basic';     
+      $this->request->data['ApiKey']['user_id'] = $id;
+      $ApiKey->create();
+      $ApiKey->save($this->request->data);
+      
+    }
+  }  
  
   /**
    * The API connections action shows the connections of a user, if the API is valid.
@@ -243,7 +329,7 @@ class UsersController extends AppController {
    *
    * @param integer $id The user id.
    * @return array
-   */    
+      
   public function api_connections($id) {
     
     if ($this->request->is('get')) {
@@ -266,7 +352,9 @@ class UsersController extends AppController {
       
       $this->set('connections', $result);
     }
-  }
+  }  
+   
+   */ 
    
   /**
    * isAuthorized checks if the user is allowed to use a specific controller action.
@@ -276,7 +364,7 @@ class UsersController extends AppController {
    */
   public function isAuthorized($user) {
     if (in_array($this->action, array('settings', 'whitelist', 'request_api', 'connections'))) {
-      $userId = $this->request->params['id'];    
+      $userId = $this->request->params['pass'][0];
       if($userId === $user['id']) {
         return true;
       }

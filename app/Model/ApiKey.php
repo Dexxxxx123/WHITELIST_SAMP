@@ -26,12 +26,32 @@ class ApiKey extends AppModel {
   
   /**
    * We need to define the table name manually otherwise CakePHP will recognize the table as ApiKeys instead of api_keys.
+   * 
+   * @var string $useTable
    */
   public $useTable = 'api_keys'; 
   
   /**
    * An ApiKey belongs to a single user.
+   * 
+   * @var string $belongsTo
    */
   public $belongsTo = 'User';
+  
+  /**
+   * ApiKey validations.
+   * 
+   * @var array $validate
+   */
+  public $validate = array(
+    'address' => array(
+      'isUnique' => array(
+        'rule' => 'isUnique', 'message' => 'This address has already been used.'
+       ),
+      'notEmpty' => array(
+        'rule' => 'notEmpty', 'message' => 'The address must not be empty.'
+       )
+    )
+  );
   
 }

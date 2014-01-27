@@ -25,6 +25,7 @@
     echo $this->Html->meta('icon'); 
     echo $this->Html->css('foundation.min.css');
     echo $this->Html->script('http://code.jquery.com/jquery.min.js');
+    echo $this->Html->css('http://fonts.googleapis.com/css?family=Open+Sans:300,400,700');
     ?>
   </head>
   
@@ -34,7 +35,7 @@
       <div class="row">
         <div class="small-12 small-centered text-center columns">
           <br><?= $this->Html->image('logo.png', array('alt' => 'WHITELIST_SAMP Logo')); ?><br>
-          <h2 class="subheader">global whitelist platform</h2>
+          <h2 class="subheader" style="font-family: 'Open Sans'; font-weight: 300;">global whitelist platform</h2>
         </div>
       </div>              
     </header>

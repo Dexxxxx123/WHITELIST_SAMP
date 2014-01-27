@@ -6,21 +6,11 @@
       <?php if($this->Paginator->hasPrev()): ?>
         <?= $this->Paginator->prev(__('« Previous'), array(
           'tag' => false, 'class' => 'left button tiny',
-          'url' => array(
-            'controller' => 'users', 
-            'action' => 'connections', 
-            'id' => $this->Session->read('Auth.User.id')
-          )
         )); ?>
       <?php endif; ?>    
       <?php if($this->Paginator->hasNext()): ?>
         <?= $this->Paginator->next(__('Next »'), array(
           'tag' => false, 'class' => 'right button tiny',
-          'url' => array(
-            'controller' => 'users', 
-            'action' => 'connections', 
-            'id' => $this->Session->read('Auth.User.id')
-          )
         )); ?>
       <?php endif; ?>
       </div>

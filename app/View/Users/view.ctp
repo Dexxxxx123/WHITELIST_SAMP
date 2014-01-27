@@ -1,5 +1,5 @@
 <div class="row">
-  <?php if ($this->Session->read('Auth.User.id') == $user['User']['id']): ?>
+  <?php if ($this->Session->read('Auth.User.id') == $user['User']['id'] || $this->Session->read('Auth.User.role') === 'Administrator'): ?>
   <?= $this->element('Users/sidenav'); ?>
   <div class="medium-6 columns">
     <strong>Username:</strong> <br><br>

@@ -28,7 +28,7 @@ class User extends Model {
    * 
    * @var string $hasMany
    */
-  public $hasMany = 'Alias';
+  public $hasMany = array('Alias', 'Ban');
   
   /**
    * An User has only one ApiKey, if registered.
