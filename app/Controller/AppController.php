@@ -80,7 +80,7 @@ class AppController extends Controller {
       'Form' => array(
         'userModel' => 'User',
         'passwordHasher' => 'Blowfish'
-      )      
+      ) 
     );
     
     $this->Auth->allow('display');

@@ -78,11 +78,16 @@
    */
   
   Router::connect('/', array('controller' => 'pages', 'action' => 'display', 'home'));
+
+  Router::connect('/api/users/view/:username', array(
+    'controller' => 'apikeys', 'action' => 'users_view', '[method]' => 'GET'
+  ), array('pass' => array('username')));
   
-  Router::connect('/api/:controller/:action/*', array('prefix' => 'api', 'api' => true));
+  Router::connect('/api/users/whitelist/:username', array(
+    'controller' => 'apikeys', 'action' => 'users_check_whitelist', '[method]' => 'GET'
+  ), array('pass' => array('username')));   
   
-  Router::mapResources('users', array('prefix' => '/api/'));
-  Router::parseExtensions('json');
+  Router::parseExtensions('json', 'xml');
   
 /**
  * Load all plugin routes. See the CakePlugin documentation on
@@ -94,4 +99,4 @@
  * Load the CakePHP default routes. Only remove this if you do not want to use
  * the built-in default routes.
  */
-	require CAKE . 'Config' . DS . 'routes.php';
+ require CAKE . 'Config' . DS . 'routes.php';

@@ -100,6 +100,16 @@ class User extends Model {
   }
 
   /**
+   * Checks if a user exists with the selected username.
+   * 
+   * @param string $username The user's name.
+   * @return boolean
+   */
+  public function doesUsernameExist($username) {
+    return (! empty($this->find('count', array('conditions' => array('User.username' => $username)) === false))) ? true : false;   
+  }
+
+  /**
    * beforeValidate callback is used in the User model to make checks before a validation is executed.
    * 
    * @param array $options (optional)

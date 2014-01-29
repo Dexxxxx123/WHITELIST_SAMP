@@ -121,58 +121,15 @@ class UsersController extends AppController {
    */  
   public function view($username) {
     
-    $count = $this->User->find('count', array('conditions' => array('User.username' => $username)));   
-    if (empty($count)) {
+    if (! $this->User->doesUsernameExist($username)) {
       throw new NotFoundException(__('User not found.'));
     }
     
     $result = $this->User->findByUsername($username, array(
-      'User.id',
-      'User.username',
-      'User.email',
-      'User.joined',
-      'User.authy_id',
-      'User.role'
+      'User.id', 'User.username', 'User.email', 'User.joined', 'User.authy_id', 'User.role'
     ));
     
     $this->set('user', $result);
-  }  
-
-  /**
-   * The API view action shows the information of a user, if the API is valid.
-   * API is available only in JSON.
-   *
-   * @param string $username The user's name.
-   * @return array
-   */  
-  public function api_view($username) {           
-    if ($this->request->is('get')) {      
-      if (! AuthComponent::user('token')) {  
-        if (AuthComponent::user('username')) {
-          return $this->set('user', array('message' => 'You must logout from the portal to use the API.', 'status' => 'error')); 
-        }                            
-        return $this->set('user', array('message' => 'API key is invalid.', 'status' => 'error')); 
-      }
- 
-     
-      $count = $this->User->find('count', array('conditions' => array('User.username' => $username)));
-      if (empty($count)) {
-        return $this->set('user', array('message' => 'User not found.', 'status' => 'error')); 
-      }
-                     
-      $result = $this->User->find('first', array(
-        'conditions' => array('User.username' => $username),
-        'recursive' => 1,
-        'fields' => array(
-          'User.id',
-          'User.username',
-          'User.joined',
-        )
-      ));
-             
-      return $this->set('user', $result);     
-    }   
-    $this->set('user', array('message' => 'Method not allowed.', 'status' => 'error'));
   }
 
   /**
@@ -182,16 +139,12 @@ class UsersController extends AppController {
    * @return void
    */
   public function settings($username) {
-
-    $count = $this->User->find('count', array('conditions' => array('User.username' => $username)));   
-    if (empty($count)) {
+    
+    if (! $this->User->doesUsernameExist($username)) {
       throw new NotFoundExcepetion(__('User not found.'));      
     }
     
-    $user = $this->User->findByUsername($username, array(
-      'User.username',
-      'User.email'
-    ));
+    $user = $this->User->findByUsername($username, array('User.username', 'User.email'));
     
     if ($this->request->is('post', 'put')) {
       $this->request->data['User']['current_email'] = $user['User']['email'];
@@ -256,23 +209,15 @@ class UsersController extends AppController {
       'conditions' => array('User.username' => $username), 
       'fields' => 'User.id'
       )
-    );    
+    );
     if (empty($result)) {
       throw new NotFoundExcepetion(__('User not found.'));      
     }
     
     $this->Paginator->settings = array(
       'paramType' => 'querystring',
-      'conditions' => array(
-        'Ban.user_id' => $result['User']['id'],
-        'Ban.status' => 1,       
-      ),
-      'fields' => array(
-        'Ban.id',
-        'Ban.address',
-        'Ban.type',
-        'Ban.date'
-      ),
+      'conditions' => array('Ban.user_id' => $result['User']['id'], 'Ban.status' => 1),
+      'fields' => array('Ban.id', 'Ban.address', 'Ban.type', 'Ban.date'),
       'maxLimit' => 25
     );
      
@@ -294,7 +239,7 @@ class UsersController extends AppController {
    * @return void
    */    
   public function request_api($username) {
-    if ($this->request->is('post')) {            
+    if ($this->request->is('post')) {         
       $ApiKey = ClassRegistry::init('ApiKey');
       
       $result = $this->User->find('first', array(
@@ -304,9 +249,7 @@ class UsersController extends AppController {
       );
       
       $count = $ApiKey->find('count', array(
-        'conditions' => array(
-          'ApiKey.user_id' => $result['User']['id']
-        )
+        'conditions' => array('ApiKey.user_id' => $result['User']['id'])
       ));
       
       if (! empty($count)) {
@@ -314,10 +257,8 @@ class UsersController extends AppController {
       }
       
       $count = $ApiKey->find('count', array(
-        'conditions' => array(
-          'ApiKey.address' => $this->request->data['ApiKey']['address']
-        )
-      ));     
+        'conditions' => array('ApiKey.address' => $this->request->data['ApiKey']['address'])
+      ));
       if (! empty($count)) {
         return $this->Session->setFlash(__('This server address already has got an API key registered.'), 'default', array(), 'warning'); 
       }
@@ -326,9 +267,7 @@ class UsersController extends AppController {
       while(! empty($count)) {
         $apiToken = substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 10);
         $count = $ApiKey->find('count', array(
-          'conditions' => array(
-            'ApiKey.token' => $apiToken
-          )
+          'conditions' => array('ApiKey.token' => $apiToken)
         ));
       }
       
@@ -338,40 +277,7 @@ class UsersController extends AppController {
       $ApiKey->create();
       $ApiKey->save($this->request->data);     
     }
-  }  
- 
-  /**
-   * The API connections action shows the connections of a user, if the API is valid.
-   * API is available only in JSON.
-   *
-   * @param integer $id The user id.
-   * @return array
-      
-  public function api_connections($id) {
-    
-    if ($this->request->is('get')) {
-      if (! AuthComponent::user('token')) {  
-        if (AuthComponent::user('username')) {
-           return $this->set('user', array('message' => 'You must logout from the portal to use the API.', 'status' => 'error')); 
-        }                            
-        return $this->set('user', array('message' => 'API key is invalid.', 'status' => 'error')); 
-      }
-      
-      if (! $this->User->exists($id)) {
-        return $this->set('user', array('message' => 'User not found.', 'status' => 'error')); 
-      }                    
-      
-      $result = ClassRegistry::init('Connection')->find('all', array(
-        'conditions' => array(
-          'Alias.user_id' => $id
-        )
-      ));
-      
-      $this->set('connections', $result);
-    }
-  }  
-   
-   */ 
+  }
    
   /**
    * isAuthorized checks if the user is allowed to use a specific controller action.
