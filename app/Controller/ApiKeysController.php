@@ -30,7 +30,7 @@ class ApiKeysController extends AppController {
   public $components = array('RequestHandler');
   
   public function beforeFilter($options = array()) {
-    parent::beforeFilter($options);
+    parent::beforeFilter($options);    
   }
   
   /**
@@ -43,8 +43,8 @@ class ApiKeysController extends AppController {
          
     $User = ClassRegistry::init('User');
 
-    if (! AuthComponent::user()) {
-      $this->set('result', array('message' => 'API key is invalid.', 'status' => 'error'));                          
+    if (! AuthComponent::user('token')) {
+      $this->set('result', array('message' => 'API key is invalid.', 'status' => 'error'));                      
     }  else if (! $User->doesUsernameExist($username)) {
       $this->set('result', array('message' => 'User not found.', 'status' => 'error')); 
     } else {
@@ -69,7 +69,7 @@ class ApiKeysController extends AppController {
       )
     );          
 
-    if (! AuthComponent::user()) {
+    if (! AuthComponent::user('token')) {
       $this->set('result', array('message' => 'API key is invalid.', 'status' => 'error'));
     }  else if (! $User->doesUsernameExist($username)) {
       $this->set('result', array('message' => 'User not found.', 'status' => 'error')); 
@@ -87,7 +87,7 @@ class ApiKeysController extends AppController {
           'Ban.type', 
           'Ban.date'
         )
-      ));     
+      ));
       
       $globalResult = $Ban->find('all', array(
         'conditions' => array(
