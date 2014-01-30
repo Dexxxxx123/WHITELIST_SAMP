@@ -24,6 +24,8 @@ More information on this will be released in the portal.
 
 WHITELIST_SAMP functionality is fairly simple. Once a user joins a server, if WHITELIST_SAMP is implemented, the server requests the user to register their WHITELIST_SAMP account in the server. An API sends WHITELIST_SAMP the user IP address, username, password (obviously hashed) and store it in the database. In this way, if a player changes nickname and the IPs match, it will be saved as alias in the database.
 
+You may view the versions roadmap in [this](https://github.com/GiampaoloFalqui/WHITELIST_SAMP/wiki/Versions-Roadmap) wiki page.
+
 ==============
 ### Developed with CakePHP
 [![CakePHP](http://cakephp.org/img/cake-logo.png)](http://www.cakephp.org)
