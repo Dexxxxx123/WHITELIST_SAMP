@@ -29,37 +29,53 @@ class ApiKeysController extends AppController {
    */
   public $components = array('RequestHandler');
   
-  public function beforeFilter($options = array()) {
-    parent::beforeFilter($options);    
+  public function beforeFilter($options = array()) {   
+    parent::beforeFilter($options);
   }
   
   /**
-   * The API view action shows the information of a user, if the API is valid.
+   * The API view action shows the information of a user and its aliases, if the API is valid.
    *
    * @param string $username The user's name.
    * @return array
    */  
   public function users_view($username) {
          
-    $User = ClassRegistry::init('User');
-
-    if (! AuthComponent::user('token')) {
-      $this->set('result', array('message' => 'API key is invalid.', 'status' => 'error'));                      
-    }  else if (! $User->doesUsernameExist($username)) {
-      $this->set('result', array('message' => 'User not found.', 'status' => 'error')); 
-    } else {
-      $result = $User->find('first', array(
-        'conditions' => array('User.username' => $username),        
-        'fields' => array('User.id', 'User.username', 'User.joined')
-      ));
-      $this->set('result', $result); 
+    if (! $this->request->is('get')) {
+      throw new MethodNotAllowedException(__('Method not allowed'));
     }
     
-    $this->set('_serialize', 'result');
+    $User = ClassRegistry::init('User');
+    $Alias = ClassRegistry::init('Alias');
+
+    if (! AuthComponent::user('token')) {      
+      $this->set('result', array('message' => 'API key is invalid.', 'status' => 'error'));                            
+    }  else if (! $User->doesUsernameExist($username)) {     
+      $this->set('result', array('message' => 'User not found.', 'status' => 'error')); 
+    } else {     
+      $userData = $User->find('first', array(
+        'conditions' => array('User.username' => $username),
+        'fields' => array('User.id', 'User.username', 'User.joined')
+      ));
+      
+      $aliasData = $Alias->find('list', array(
+        'conditions' => array('Alias.user_id' => $userData['User']['id']),
+        'fields' => array('Alias.id', 'Alias.alias')
+      ));
+            
+      $this->set('User', array_shift($userData)); 
+      $this->set('Alias', $aliasData); 
+    }
+    
+    $this->set('_serialize', array('User', 'Alias'));
   }
   
   public function users_check_whitelist($username) {
     
+    if (! $this->request->is('get')) {
+      throw new MethodNotAllowedException(__('Method not allowed'));
+    }
+        
     $User = ClassRegistry::init('User');
     $Ban = ClassRegistry::init('Ban');
     
@@ -103,11 +119,11 @@ class ApiKeysController extends AppController {
         )
       ));      
       
-      $this->set('local', $localResult);
-      $this->set('global', $globalResult); 
+      $this->set('Local', $localResult);      
+      $this->set('Global', $globalResult); 
     }
     
-    $this->set('_serialize', array('local', 'global'));
+    $this->set('_serialize', array('Local', 'Global'));
   } 
 
   public function isAuthorized($user) {

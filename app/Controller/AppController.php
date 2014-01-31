@@ -67,7 +67,7 @@ class AppController extends Controller {
   public function beforeFilter($options = array()) {
        
     $this->Auth->authenticate = array(
-      'Authenticate.Token' => array(
+      'Authenticate.Token' => array(       
         'parameter' => 'api_key',
         'header' => 'X-WhiteListApiToken',
         'userModel' => 'ApiKey',

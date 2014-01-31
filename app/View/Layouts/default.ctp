@@ -76,7 +76,7 @@
         </div>
       </div>
       
-      <!--
+      
       <?php if ($this->Session->read('Auth.User.role') == 'Administrator'): ?>
       <div class="row">
         <div class="small-12 small-centered text-center columns">                    
@@ -84,7 +84,7 @@
         </div>
       </div> 
       <?php endif; ?>
-      -->
+      
   </footer>
 </body>
 </html>
