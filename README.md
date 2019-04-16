@@ -1,4 +1,4 @@
-WHITELIST_SAMP
+WHITELIST_SAMP [abandoned]
 ==============
 
 ### What is WHITELIST_SAMP?
